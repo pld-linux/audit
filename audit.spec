@@ -2,12 +2,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	0.9.2
-Release:	1
+Version:	0.9.4
+Release:	0.1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	e31f3c554e9848a50afa6a119dc84d5c
+# Source0-md5:	d270c9226134e29b65979d19a853912e
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1.9
