@@ -1,13 +1,14 @@
-# TODO: fix build with current llh
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	0.9.4
+Version:	0.9.7
 Release:	0.1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	d270c9226134e29b65979d19a853912e
+# Source0-md5:	8548fbe16c3c44bdcc045fba0f35a070
+# http://people.redhat.com/sgrubb/audit/audit.h
+Source1:	audit.h
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1.9
@@ -77,6 +78,9 @@ u¿ywaj±cych ¶rodowiska audytu.
 %prep
 %setup -q
 
+install -D %{SOURCE1} lib/linux/audit.h
+install -D %{SOURCE1} src/mt/linux/audit.h
+
 %build
 %{__libtoolize}
 %{__aclocal}
@@ -84,7 +88,9 @@ u¿ywaj±cych ¶rodowiska audytu.
 %{__autoheader}
 %{__automake}
 %configure
-%{__make}
+# override auditd_CFLAGS to avoid -fPIE unsupported by gcc 3.3
+%{__make} \
+	auditd_CFLAGS=
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -96,7 +102,7 @@ install -d $RPM_BUILD_ROOT%{_var}/log/audit
 install -d $RPM_BUILD_ROOT/%{_lib}
 mv -f $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
 ln -sf $(cd $RPM_BUILD_ROOT/%{_lib} ; echo libaudit.so.*.*.*) \
-	PM_BUILD_ROOT%{_libdir}/libaudit.so
+	$RPM_BUILD_ROOT%{_libdir}/libaudit.so
 
 # We manually install this since Makefile doesn't
 install -d $RPM_BUILD_ROOT%{_includedir}
