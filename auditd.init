@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+# auditd        This starts and stops auditd
+#
+# chkconfig: 2345 18 87
+# description: This starts the Linux Auditing System Daemon
+#
+# processname: /sbin/auditd
+# config: /etc/sysconfig/auditd
+# config: /etc/auditd.conf
+# pidfile: /var/run/auditd.pid
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+AUDITD_CLEAN_STOP=yes
+EXTRAOPTIONS=
+
+# Get service config - may override defaults
+[ -f /etc/sysconfig/auditd ] && . /etc/sysconfig/auditd
+
+RETVAL=0
+
+# See how we were called.
+case "$1" in
+  start)
+    	if [ ! -f /var/lock/subsys/auditd ]; then
+		# show "Starting %s service" auditd
+		msg_starting auditd
+		unset HOME MAIL USER USERNAME
+		daemon auditd "$EXTRAOPTIONS"
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/auditd
+		# Load the default rules
+		[ -f /etc/audit.rules ] && /sbin/auditctl -R /etc/audit.rules >/dev/null
+	else
+		# show "%s service is already running." auditd
+		msg_already_running auditd
+	fi
+	;;
+  stop)
+	if [ -f /var/lock/subsys/auditd ]; then
+		# Stop daemons.
+		# show "Stopping %s service" auditd
+		msg_stopping auditd
+		killproc auditd
+		rm -f /var/lock/subsys/auditd
+		# Remove watches so shutdown works cleanly
+		if ! is_no "$AUDITD_CLEAN_STOP"; then
+			/sbin/auditctl -D >/dev/null
+		fi
+	else
+		# show "%s service is not running." auditd
+		msg_not_running auditd
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	exit $?
+	;;
+  reload|force-reload)
+	if [ -f /var/lock/subsys/auditd ]; then
+		# show "Reload %s service" auditd
+		msg_reloading auditd
+		killproc auditd -HUP
+		RETVAL=$?
+	else
+		# show "%s service is not running." auditd
+		msg_not_running auditd >&2
+		RETVAL=7
+	fi
+	;;
+  status)
+	status auditd
+	RETVAL=$?
+	;;
+  *)
+	# show "Usage: %s {start|stop|restart|reload|force-reload|status}"
+	msg_usage "$0 {start|stop|restart|reload|force-reload|status}"
+	RETVAL=3
+esac
+
+exit $RETVAL
