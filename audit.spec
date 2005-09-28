@@ -2,7 +2,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
 Version:	1.0.3
-Release:	1
+Release:	1.1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -93,7 +93,7 @@ install -D %{SOURCE1} src/mt/linux/audit.h
 %configure
 # override auditd_CFLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \
-	auditd_CFLAGS=
+	auditd_CFLAGS="-fPIC"
 
 %install
 rm -rf $RPM_BUILD_ROOT
