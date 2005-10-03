@@ -17,7 +17,7 @@ BuildRequires:	automake >= 1.9
 BuildRequires:	gcc >= 5:3.4
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
-PreReq:		rc-scripts
+Requires:	rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -143,9 +143,9 @@ fi
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
 %attr(754,root,root) /etc/rc.d/init.d/auditd
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/auditd.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit.rules
-%config(noreplace) %attr(640,root,root) %verify(not md5 mtime size) /etc/sysconfig/auditd
+%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) %{_sysconfdir}/auditd.conf
+%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) %{_sysconfdir}/audit.rules
+%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_mandir}/man8/*
 
