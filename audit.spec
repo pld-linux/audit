@@ -143,9 +143,9 @@ fi
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
 %attr(754,root,root) /etc/rc.d/init.d/auditd
-%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) %{_sysconfdir}/auditd.conf
-%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) %{_sysconfdir}/audit.rules
-%config(noreplace) %verify(not md5 mtime size) %attr(640,root,root) %verify(not md5 mtime size) /etc/sysconfig/auditd
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/auditd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit.rules
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_mandir}/man8/*
 
