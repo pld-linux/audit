@@ -14,6 +14,7 @@ Source3:	%{name}d.sysconfig
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1.9
+BuildRequires:	gcc >= 5:3.4
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
 PreReq:		rc-scripts
@@ -91,9 +92,7 @@ install -D %{SOURCE1} src/mt/linux/audit.h
 %{__autoheader}
 %{__automake}
 %configure
-# override auditd_CFLAGS to avoid -fPIE unsupported by gcc 3.3
-%{__make} \
-	auditd_CFLAGS="-fPIC"
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
