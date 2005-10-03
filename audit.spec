@@ -93,7 +93,7 @@ install -D %{SOURCE1} src/mt/linux/audit.h
 %configure
 # override auditd_CFLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \
-	auditd_CFLAGS="-fPIC"
+	auditd_CFLAGS=
 
 %install
 rm -rf $RPM_BUILD_ROOT
