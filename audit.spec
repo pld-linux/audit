@@ -1,12 +1,16 @@
+#
+# Conditional build:
+%bcond_without	pie	# auditd as PIE binary
+#
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	1.0.3
-Release:	1.1
+Version:	1.0.8
+Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	950daad97adfa3134289aa5b4e885f8f
+# Source0-md5:	9719236e6631ca66965c42b7207c5715
 # http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	audit.h
 Source2:	%{name}d.init
@@ -14,7 +18,7 @@ Source3:	%{name}d.sysconfig
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1.9
-BuildRequires:	gcc >= 5:3.4
+%{?with_pie:BuildRequires:	gcc >= 5:3.4}
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
 Requires:	rc-scripts
@@ -92,7 +96,9 @@ install -D %{SOURCE1} src/mt/linux/audit.h
 %{__autoheader}
 %{__automake}
 %configure
-%{__make}
+# override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
+%{__make} \
+	%{!?with_pie:auditd_CFLAGS= auditd_LDFLAGS=}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -140,6 +146,7 @@ fi
 %doc AUTHORS ChangeLog README THANKS TODO sample.rules
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
+%attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
 %attr(754,root,root) /etc/rc.d/init.d/auditd
