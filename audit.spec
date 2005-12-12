@@ -12,7 +12,7 @@ Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 # Source0-md5:	9719236e6631ca66965c42b7207c5715
 # http://people.redhat.com/sgrubb/audit/audit.h
-Source1:	audit.h
+Source1:	%{name}.h
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 URL:		http://people.redhat.com/sgrubb/audit/
@@ -21,9 +21,9 @@ BuildRequires:	automake >= 1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
-Requires:	rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
