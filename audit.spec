@@ -21,6 +21,7 @@ BuildRequires:	automake >= 1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
+BuildRequires:	rpm-pythonprov
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
@@ -83,6 +84,19 @@ developing applications that need to use the audit framework library.
 Ten pakiet zawiera statyczn± bibliotekê do tworzenia aplikacji
 u¿ywaj±cych ¶rodowiska audytu.
 
+%package -n python-audit
+Summary:	Python interface to libaudit library
+Summary(pl):	Pythonowy interfejs do biblioteki libaudit
+License:	LGPL
+Group:		Libraries/Python
+Requires:	%{name}-libs = %{version}-%{release}
+
+%description -n python-audit
+Python interface to libaudit library.
+
+%description -n python-audit -l pl
+Pythonowy interfejs do biblioteki libaudit.
+
 %prep
 %setup -q
 
@@ -119,6 +133,8 @@ install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
+rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -144,6 +160,7 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog README THANKS TODO sample.rules
+%attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
 %attr(750,root,root) %{_sbindir}/aureport
@@ -170,3 +187,8 @@ fi
 %files libs-static
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
+
+%files -n python-audit
+%defattr(644,root,root,755)
+%attr(755,root,root) %{py_sitedir}/_audit.so
+%{py_sitescriptdir}/audit.py
