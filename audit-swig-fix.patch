@@ -1,0 +1,10 @@
+diff -Naur audit-1.1.2.orig/swig/auditswig.i audit-1.1.2/swig/auditswig.i
+--- audit-1.1.2.orig/swig/auditswig.i	2005-11-30 20:39:48.000000000 +0100
++++ audit-1.1.2/swig/auditswig.i	2006-01-10 18:02:20.000000000 +0100
+@@ -23,4 +23,6 @@
+ 	#include "../lib/libaudit.h"
+ %}
+ 
++%apply unsigned int { uint32_t };
++%include "../lib/linux/audit.h"
+ %include "../lib/libaudit.h"
