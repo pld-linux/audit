@@ -5,12 +5,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	1.1.2
-Release:	0.2
+Version:	1.1.3
+Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	7537b147736ebf50cf7103a767d6725a
+# Source0-md5:	ff5be0c2fdc3a28ec4903f64a5587faf
 # http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	%{name}.h
 Source2:	%{name}d.init
@@ -135,9 +135,10 @@ install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
-rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
+%py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
+rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -195,4 +196,4 @@ fi
 %files -n python-audit
 %defattr(644,root,root,755)
 %attr(755,root,root) %{py_sitedir}/_audit.so
-%{py_sitescriptdir}/audit.pyc
+%{py_sitescriptdir}/audit.py[co]
