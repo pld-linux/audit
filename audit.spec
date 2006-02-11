@@ -23,6 +23,7 @@ BuildRequires:	automake >= 1.9
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
 BuildRequires:	rpm-pythonprov
+BuildRequires:	swig-python
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
