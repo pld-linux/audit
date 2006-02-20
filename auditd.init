@@ -5,7 +5,7 @@
 # chkconfig: 2345 18 87
 # description: This starts the Linux Auditing System Daemon
 #
-# processname: /sbin/auditd
+# processname: auditd
 # config: /etc/sysconfig/auditd
 # config: /etc/auditd.conf
 # pidfile: /var/run/auditd.pid
