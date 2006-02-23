@@ -22,6 +22,7 @@ BuildRequires:	automake >= 1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
+BuildRequires:	glibc-headers	>= 2.4
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
 Requires(post,preun):	/sbin/chkconfig
