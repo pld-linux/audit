@@ -24,6 +24,7 @@ BuildRequires:	glibc-headers >= 6:2.4
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
 BuildRequires:	rpm-pythonprov
+BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	swig-python
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
@@ -150,17 +151,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add auditd
-if [ -f /var/lock/subsys/auditd ]; then
-	/etc/rc.d/init.d/auditd restart >&2
-else
-	echo "Run \"/etc/rc.d/init.d/auditd start\" to start audit daemon." >&2
-fi
+%service auditd restart "audit daemon"
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/auditd ]; then
-		/etc/rc.d/init.d/auditd stop >&2
-	fi
+	%service auditd stop
 	/sbin/chkconfig --del auditd
 fi
 
