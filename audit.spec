@@ -5,12 +5,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	1.1.4
+Version:	1.1.5
 Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	3a5f2a609b72de4101cc78f28c233a30
+# Source0-md5:	78d71a75ac2677cb77be3dc788119d2c
 # http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	%{name}.h
 Source2:	%{name}d.init
@@ -18,9 +18,10 @@ Source3:	%{name}d.sysconfig
 Patch0:		%{name}-swig-fix.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
-BuildRequires:	automake >= 1.9
+BuildRequires:	automake >= 1:1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
-BuildRequires:	glibc-headers >= 6:2.4
+BuildRequires:	glibc-headers >= 6:2.3.6
+BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
 BuildRequires:	rpm-pythonprov
