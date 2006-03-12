@@ -118,7 +118,7 @@ install -D %{SOURCE1} src/mt/linux/audit.h
 %configure
 # override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \
-	%{!?with_pie:auditd_CFLAGS= auditd_LDFLAGS=}
+	%{!?with_pie:auditd_CFLAGS="-D_REENTRANT -D_GNU_SOURCE" auditd_LDFLAGS="-Wl,-z,relro"}
 
 %install
 rm -rf $RPM_BUILD_ROOT
