@@ -5,12 +5,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	1.1.5
+Version:	1.2
 Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	78d71a75ac2677cb77be3dc788119d2c
+# Source0-md5:	65c3bc8ea4a1b6fc90e2b0321237a5ad
 # http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	%{name}.h
 Source2:	%{name}d.init
@@ -131,6 +131,9 @@ install -d $RPM_BUILD_ROOT/%{_lib}
 mv -f $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
 ln -sf /%{_lib}/$(cd $RPM_BUILD_ROOT/%{_lib} ; echo libaudit.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libaudit.so
+mv -f $RPM_BUILD_ROOT%{_libdir}/libauparse.so.* $RPM_BUILD_ROOT/%{_lib}
+ln -sf /%{_lib}/$(cd $RPM_BUILD_ROOT/%{_lib} ; echo libauparse.so.*.*.*) \
+	$RPM_BUILD_ROOT%{_libdir}/libauparse.so
 
 # We manually install this since Makefile doesn't
 install -d $RPM_BUILD_ROOT%{_includedir}
@@ -179,17 +182,21 @@ fi
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) /%{_lib}/libaudit.so.*.*.*
+%attr(755,root,root) /%{_lib}/libauparse.so.*.*.*
 
 %files libs-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libaudit.so
+%attr(755,root,root) %{_libdir}/libauparse.so
 %{_libdir}/libaudit.la
+%{_libdir}/libauparse.la
 %{_includedir}/libaudit.h
 %{_mandir}/man3/*
 
 %files libs-static
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
+%{_libdir}/libauparse.a
 
 %files -n python-audit
 %defattr(644,root,root,755)
