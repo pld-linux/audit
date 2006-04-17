@@ -45,22 +45,22 @@ i przetwarzania rekordów audytu generowanych przez podsystem audytu w
 j±drach Linuksa 2.6.
 
 %package libs
-Summary:	Dynamic libaudit library
-Summary(pl):	Biblioteka dynamiczna libaudit
+Summary:	Dynamic audit libraries
+Summary(pl):	Biblioteki dynamiczne audit
 License:	LGPL
 Group:		Libraries
 
 %description libs
-The audit-libs package contains the dynamic library needed for
+The audit-libs package contains the dynamic libraries needed for
 applications to use the audit framework.
 
 %description libs -l pl
-Ten pakiet zawiera bibliotekê dynamiczn± potrzebn± dla aplikacji
+Ten pakiet zawiera biblioteki dynamiczne potrzebne dla aplikacji
 u¿ywaj±cych ¶rodowiska audytu.
 
 %package libs-devel
-Summary:	Header files for libaudit library
-Summary(pl):	Pliki nag³ówkowe biblioteki libaudio
+Summary:	Header files for audit libraries
+Summary(pl):	Pliki nag³ówkowe bibliotek audit
 License:	LGPL
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
@@ -75,18 +75,18 @@ Ten pakiet zawiera pliki nag³ówkowe potrzebne do tworzenia aplikacji
 u¿ywaj±cych biblioteki ¶rodowiska audytu.
 
 %package libs-static
-Summary:	Static libaudit library
-Summary(pl):	Statyczna biblioteka libaudit
+Summary:	Static audit libraries
+Summary(pl):	Statyczne biblioteki audit
 License:	LGPL
 Group:		Development/Libraries
 Requires:	%{name}-libs-devel = %{version}-%{release}
 
 %description libs-static
-The audit-libs-static package contains the static library for
-developing applications that need to use the audit framework library.
+The audit-libs-static package contains the static libraries for
+developing applications that need to use the audit framework.
 
 %description libs-static -l pl
-Ten pakiet zawiera statyczn± bibliotekê do tworzenia aplikacji
+Ten pakiet zawiera statyczne biblioteki do tworzenia aplikacji
 u¿ywaj±cych ¶rodowiska audytu.
 
 %package -n python-audit
