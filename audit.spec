@@ -2,13 +2,13 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
 Version:	1.0.3
-Release:	1.1
+Release:	2
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 # Source0-md5:	950daad97adfa3134289aa5b4e885f8f
 # http://people.redhat.com/sgrubb/audit/audit.h
-Source1:	audit.h
+Source1:	%{name}.h
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 URL:		http://people.redhat.com/sgrubb/audit/
@@ -16,9 +16,10 @@ BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1.9
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
-PreReq:		rc-scripts
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
@@ -123,17 +124,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add auditd
-if [ -f /var/lock/subsys/auditd ]; then
-	/etc/rc.d/init.d/auditd restart >&2
-else
-	echo "Run \"/etc/rc.d/init.d/auditd start\" to start audit daemon." >&2
-fi
+%service auditd restart "audit daemon"
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/auditd ]; then
-		/etc/rc.d/init.d/auditd stop >&2
-	fi
+	%service auditd stop
 	/sbin/chkconfig --del auditd
 fi
 
