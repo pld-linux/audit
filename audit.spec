@@ -2,21 +2,24 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
 Version:	1.0.3
-Release:	0.1
+Release:	2
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 # Source0-md5:	950daad97adfa3134289aa5b4e885f8f
 # http://people.redhat.com/sgrubb/audit/audit.h
-Source1:	audit.h
+Source1:	%{name}.h
+Source2:	%{name}d.init
+Source3:	%{name}d.sysconfig
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1.9
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
-PreReq:		rc-scripts
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
@@ -51,6 +54,7 @@ Summary(pl):	Pliki nag³ówkowe biblioteki libaudio
 License:	LGPL
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	linux-libc-headers >= 7:2.6.12.0-4
 
 %description libs-devel
 The audit-libs-devel package contains the header files needed for
@@ -88,9 +92,10 @@ install -D %{SOURCE1} src/mt/linux/audit.h
 %{__autoheader}
 %{__automake}
 %configure
-# override auditd_CFLAGS to avoid -fPIE unsupported by gcc 3.3
+# override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \
-	auditd_CFLAGS=
+	auditd_CFLAGS= \
+	auditd_LDFLAGS=
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -101,12 +106,15 @@ install -d $RPM_BUILD_ROOT%{_var}/log/audit
 
 install -d $RPM_BUILD_ROOT/%{_lib}
 mv -f $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
-ln -sf $(cd $RPM_BUILD_ROOT/%{_lib} ; echo libaudit.so.*.*.*) \
+ln -sf /%{_lib}/$(cd $RPM_BUILD_ROOT/%{_lib} ; echo libaudit.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libaudit.so
 
 # We manually install this since Makefile doesn't
 install -d $RPM_BUILD_ROOT%{_includedir}
 install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
+
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
+install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -116,17 +124,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add auditd
-if [ -f /var/lock/subsys/auditd ]; then
-	/etc/rc.d/init.d/auditd restart >&2
-else
-	echo "Run \"/etc/rc.d/init.d/auditd start\" to start audit daemon." >&2
-fi
+%service auditd restart "audit daemon"
 
 %preun
 if [ "$1" = "0" ]; then
-	if [ -f /var/lock/subsys/auditd ]; then
-		/etc/rc.d/init.d/auditd stop >&2
-	fi
+	%service auditd stop
 	/sbin/chkconfig --del auditd
 fi
 
