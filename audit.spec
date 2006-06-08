@@ -1,6 +1,7 @@
 #
 # Conditional build:
 %bcond_without	pie	# auditd as PIE binary
+%bcond_without	python	# don't build python bindings
 #
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
@@ -24,9 +25,13 @@ BuildRequires:	glibc-headers >= 6:2.3.6
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 2.6.11
+%if %{with python}
 BuildRequires:	rpm-pythonprov
-BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	swig-python
+%else
+BuildRequires:	sed >= 4.0
+%endif
+BuildRequires:	rpmbuild(macros) >= 1.268
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
@@ -109,6 +114,11 @@ Pythonowy interfejs do biblioteki libaudit.
 install -D %{SOURCE1} lib/linux/audit.h
 install -D %{SOURCE1} src/mt/linux/audit.h
 
+%if %{without python}
+sed '/PYTHON/d; s#swig/Makefile ##' -i configure.ac
+sed 's/swig//' -i Makefile.am
+%endif
+
 %build
 %{__libtoolize}
 %{__aclocal}
@@ -142,10 +152,12 @@ install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
+%if %{with python}
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -198,7 +210,9 @@ fi
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
 
+%if %{with python}
 %files -n python-audit
 %defattr(644,root,root,755)
 %attr(755,root,root) %{py_sitedir}/_audit.so
 %{py_sitescriptdir}/audit.py[co]
+%endif
