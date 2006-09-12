@@ -6,17 +6,18 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	1.2
+Version:	1.2.6
 Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	65c3bc8ea4a1b6fc90e2b0321237a5ad
-# http://people.redhat.com/sgrubb/audit/audit.h
+# Source0-md5:	de377351b79b813636b56bce42b0031f
+# formerly http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	%{name}.h
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-swig-fix.patch
+Patch1:		%{name}-install.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -110,6 +111,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 install -D %{SOURCE1} lib/linux/audit.h
 install -D %{SOURCE1} src/mt/linux/audit.h
@@ -155,7 +157,10 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 %if %{with python}
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
+%py_comp $RPM_BUILD_ROOT%{py_sitedir}
+%py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
 rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
+rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 %endif
 
@@ -185,8 +190,9 @@ fi
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
 %attr(754,root,root) /etc/rc.d/init.d/auditd
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/auditd.conf
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit.rules
+%dir %{_sysconfdir}/audit
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit.rules
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_mandir}/man8/*
@@ -195,6 +201,7 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) /%{_lib}/libaudit.so.*.*.*
 %attr(755,root,root) /%{_lib}/libauparse.so.*.*.*
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libaudit.conf
 
 %files libs-devel
 %defattr(644,root,root,755)
@@ -215,4 +222,5 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{py_sitedir}/_audit.so
 %{py_sitescriptdir}/audit.py[co]
+%{py_sitedir}/AuditMsg.py[co]
 %endif
