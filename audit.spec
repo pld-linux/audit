@@ -163,7 +163,7 @@ rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 %else
-rm -r $RPM_BUILD_ROOT%{_prefix}/lib/python2.4
+rm -r $RPM_BUILD_ROOT%{py_libdir}
 %endif
 
 %clean
