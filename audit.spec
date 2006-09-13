@@ -155,6 +155,10 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
 %if %{with python}
+if [ "%{py_sitedir}" != "/usr/lib/python2.4/site-packages" ]; then
+install -d $RPM_BUILD_ROOT%{py_sitedir}
+mv $RPM_BUILD_ROOT/usr/lib/python2.4/site-packages/* $RPM_BUILD_ROOT%{py_sitedir}
+fi
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
@@ -163,7 +167,7 @@ rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 %else
-rm -r $RPM_BUILD_ROOT%{py_libdir}
+rm -r $RPM_BUILD_ROOT/usr/lib/python2.4
 %endif
 
 %clean
