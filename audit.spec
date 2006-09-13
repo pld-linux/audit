@@ -162,6 +162,8 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
+%else
+rm -r $RPM_BUILD_ROOT%{_prefix}/lib/python2.4
 %endif
 
 %clean
@@ -183,7 +185,6 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog README THANKS TODO sample.rules
-%attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
 %attr(750,root,root) %{_sbindir}/aureport
@@ -220,6 +221,7 @@ fi
 %if %{with python}
 %files -n python-audit
 %defattr(644,root,root,755)
+%attr(750,root,root) %{_sbindir}/audispd
 %attr(755,root,root) %{py_sitedir}/_audit.so
 %{py_sitescriptdir}/audit.py[co]
 %{py_sitedir}/AuditMsg.py[co]
