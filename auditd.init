@@ -63,7 +63,7 @@ case "$1" in
 		killproc auditd -HUP
 		RETVAL=$?
 	else
-		msg_not_running auditd >&2
+		msg_not_running auditd
 		RETVAL=7
 	fi
 	;;
