@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
-Version:	1.2.6
+Version:	1.2.9
 Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	de377351b79b813636b56bce42b0031f
+# Source0-md5:	2cb76a573b332ef4eb08351d9408b6cf
 # formerly http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	%{name}.h
 Source2:	%{name}d.init
@@ -132,11 +132,18 @@ sed 's/swig//' -i Makefile.am
 %{__make} \
 	%{!?with_pie:auditd_CFLAGS="-D_REENTRANT -D_GNU_SOURCE" auditd_LDFLAGS="-Wl,-z,relro"}
 
+# temporarily not included in all
+%{__make} -C auparse
+
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_var}/log/audit
 
 %{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
+
+# temporarily not included in all
+%{__make} -C auparse install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/%{_lib}
