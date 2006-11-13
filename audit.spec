@@ -116,7 +116,7 @@ Pythonowy interfejs do biblioteki libaudit.
 install -D %{SOURCE1} lib/linux/audit.h
 install -D %{SOURCE1} src/mt/linux/audit.h
 
-%if %{without python}
+%if !%{with python}
 sed '/PYTHON/d; s#swig/Makefile ##' -i configure.ac
 sed 's/swig//' -i Makefile.am
 %endif
