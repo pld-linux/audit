@@ -1,6 +1,6 @@
 #
 # Conditional build:
-%bcond_without	pie	# auditd as PIE binary
+%bcond_with	pie	# auditd as PIE binary
 %bcond_without	python	# don't build python bindings
 #
 Summary:	User space tools for 2.6 kernel auditing
