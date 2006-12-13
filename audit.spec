@@ -7,7 +7,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl):	Narzêdzia przestrzeni u¿ytkownika do audytu j±der 2.6
 Name:		audit
 Version:	1.3.1
-Release:	1
+Release:	2
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -127,7 +127,8 @@ sed 's/swig//' -i Makefile.am
 %{__autoconf}
 %{__autoheader}
 %{__automake}
-%configure
+%configure \
+	--with-apparmor
 # override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \
 	%{!?with_pie:auditd_CFLAGS="-D_REENTRANT -D_GNU_SOURCE" auditd_LDFLAGS="-Wl,-z,relro"}
