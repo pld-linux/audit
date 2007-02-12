@@ -4,7 +4,7 @@
 %bcond_without	python	# don't build python bindings
 #
 Summary:	User space tools for 2.6 kernel auditing
-Summary(pl):	NarzÍdzia przestrzeni uøytkownika do audytu j±der 2.6
+Summary(pl.UTF-8):   Narzƒôdzia przestrzeni u≈ºytkownika do audytu jƒÖder 2.6
 Name:		audit
 Version:	1.3.1
 Release:	2
@@ -45,14 +45,14 @@ The audit package contains the user space utilities for storing and
 processing the audit records generate by the audit subsystem in the
 Linux 2.6 kernel.
 
-%description -l pl
-Ten pakiet zawiera narzÍdzia przestrzeni uøytkownika do przechowywania
-i przetwarzania rekordÛw audytu generowanych przez podsystem audytu w
-j±drach Linuksa 2.6.
+%description -l pl.UTF-8
+Ten pakiet zawiera narzƒôdzia przestrzeni u≈ºytkownika do przechowywania
+i przetwarzania rekord√≥w audytu generowanych przez podsystem audytu w
+jƒÖdrach Linuksa 2.6.
 
 %package libs
 Summary:	Dynamic audit libraries
-Summary(pl):	Biblioteki dynamiczne audit
+Summary(pl.UTF-8):   Biblioteki dynamiczne audit
 License:	LGPL
 Group:		Libraries
 
@@ -60,13 +60,13 @@ Group:		Libraries
 The audit-libs package contains the dynamic libraries needed for
 applications to use the audit framework.
 
-%description libs -l pl
+%description libs -l pl.UTF-8
 Ten pakiet zawiera biblioteki dynamiczne potrzebne dla aplikacji
-uøywaj±cych ∂rodowiska audytu.
+u≈ºywajƒÖcych ≈õrodowiska audytu.
 
 %package libs-devel
 Summary:	Header files for audit libraries
-Summary(pl):	Pliki nag≥Ûwkowe bibliotek audit
+Summary(pl.UTF-8):   Pliki nag≈Ç√≥wkowe bibliotek audit
 License:	LGPL
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
@@ -76,13 +76,13 @@ Requires:	linux-libc-headers >= 7:2.6.12.0-4
 The audit-libs-devel package contains the header files needed for
 developing applications that need to use the audit framework library.
 
-%description libs-devel -l pl
-Ten pakiet zawiera pliki nag≥Ûwkowe potrzebne do tworzenia aplikacji
-uøywaj±cych biblioteki ∂rodowiska audytu.
+%description libs-devel -l pl.UTF-8
+Ten pakiet zawiera pliki nag≈Ç√≥wkowe potrzebne do tworzenia aplikacji
+u≈ºywajƒÖcych biblioteki ≈õrodowiska audytu.
 
 %package libs-static
 Summary:	Static audit libraries
-Summary(pl):	Statyczne biblioteki audit
+Summary(pl.UTF-8):   Statyczne biblioteki audit
 License:	LGPL
 Group:		Development/Libraries
 Requires:	%{name}-libs-devel = %{version}-%{release}
@@ -91,13 +91,13 @@ Requires:	%{name}-libs-devel = %{version}-%{release}
 The audit-libs-static package contains the static libraries for
 developing applications that need to use the audit framework.
 
-%description libs-static -l pl
+%description libs-static -l pl.UTF-8
 Ten pakiet zawiera statyczne biblioteki do tworzenia aplikacji
-uøywaj±cych ∂rodowiska audytu.
+u≈ºywajƒÖcych ≈õrodowiska audytu.
 
 %package -n python-audit
 Summary:	Python interface to libaudit library
-Summary(pl):	Pythonowy interfejs do biblioteki libaudit
+Summary(pl.UTF-8):   Pythonowy interfejs do biblioteki libaudit
 License:	LGPL
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
@@ -105,7 +105,7 @@ Requires:	%{name}-libs = %{version}-%{release}
 %description -n python-audit
 Python interface to libaudit library.
 
-%description -n python-audit -l pl
+%description -n python-audit -l pl.UTF-8
 Pythonowy interfejs do biblioteki libaudit.
 
 %prep
