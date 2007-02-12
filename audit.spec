@@ -4,7 +4,7 @@
 %bcond_without	python	# don't build python bindings
 #
 Summary:	User space tools for 2.6 kernel auditing
-Summary(pl.UTF-8):   Narzędzia przestrzeni użytkownika do audytu jąder 2.6
+Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	1.3.1
 Release:	2
@@ -52,7 +52,7 @@ jądrach Linuksa 2.6.
 
 %package libs
 Summary:	Dynamic audit libraries
-Summary(pl.UTF-8):   Biblioteki dynamiczne audit
+Summary(pl.UTF-8):	Biblioteki dynamiczne audit
 License:	LGPL
 Group:		Libraries
 
@@ -66,7 +66,7 @@ używających środowiska audytu.
 
 %package libs-devel
 Summary:	Header files for audit libraries
-Summary(pl.UTF-8):   Pliki nagłówkowe bibliotek audit
+Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek audit
 License:	LGPL
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
@@ -82,7 +82,7 @@ używających biblioteki środowiska audytu.
 
 %package libs-static
 Summary:	Static audit libraries
-Summary(pl.UTF-8):   Statyczne biblioteki audit
+Summary(pl.UTF-8):	Statyczne biblioteki audit
 License:	LGPL
 Group:		Development/Libraries
 Requires:	%{name}-libs-devel = %{version}-%{release}
@@ -97,7 +97,7 @@ używających środowiska audytu.
 
 %package -n python-audit
 Summary:	Python interface to libaudit library
-Summary(pl.UTF-8):   Pythonowy interfejs do biblioteki libaudit
+Summary(pl.UTF-8):	Pythonowy interfejs do biblioteki libaudit
 License:	LGPL
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
