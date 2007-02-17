@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.3.1
-Release:	2
+Version:	1.4.1
+Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	a23590084cea1b8b73c50830abc56b22
+# Source0-md5:	bd41d7ce365758ccf695471cff7bb802
 # formerly http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	%{name}.h
 Source2:	%{name}d.init
@@ -163,19 +163,10 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
 %if %{with python}
-if [ "%{py_sitedir}" != "/usr/lib/python2.4/site-packages" ]; then
-install -d $RPM_BUILD_ROOT%{py_sitedir}
-mv $RPM_BUILD_ROOT/usr/lib/python2.4/site-packages/* $RPM_BUILD_ROOT%{py_sitedir}
-fi
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
-%py_comp $RPM_BUILD_ROOT%{py_sitedir}
-%py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
 rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
-rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
-%else
-rm -r $RPM_BUILD_ROOT/usr/lib/python2.4
 %endif
 
 %clean
@@ -222,6 +213,7 @@ fi
 %attr(755,root,root) %{_libdir}/libauparse.so
 %{_libdir}/libaudit.la
 %{_libdir}/libauparse.la
+%{_includedir}/auparse*.h
 %{_includedir}/libaudit.h
 %{_mandir}/man3/*
 
@@ -235,6 +227,8 @@ fi
 %defattr(644,root,root,755)
 %attr(750,root,root) %{_sbindir}/audispd
 %attr(755,root,root) %{py_sitedir}/_audit.so
+%attr(755,root,root) %{py_sitedir}/_auparse.so
 %{py_sitescriptdir}/audit.py[co]
-%{py_sitedir}/AuditMsg.py[co]
+%{py_sitescriptdir}/auparse.py[co]
+%{py_sitescriptdir}/AuditMsg.py[co]
 %endif
