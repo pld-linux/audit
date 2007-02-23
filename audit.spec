@@ -117,8 +117,8 @@ install -D %{SOURCE1} lib/linux/audit.h
 install -D %{SOURCE1} src/mt/linux/audit.h
 
 %if !%{with python}
-sed '/PYTHON/d; s#swig/Makefile ##' -i configure.ac
-sed 's/swig//' -i Makefile.am
+sed '/PYTHON/d; s#swig/Makefile ##; s# audisp/Makefile##' -i configure.ac
+sed 's/swig//; s/audisp//' -i Makefile.am
 %endif
 
 %build
