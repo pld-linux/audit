@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.4.1
-Release:	1
+Version:	1.5
+Release:	0.1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	bd41d7ce365758ccf695471cff7bb802
+# Source0-md5:	81d2c5d76c6130c1f95cb1cdb9032523
 # formerly http://people.redhat.com/sgrubb/audit/audit.h
 Source1:	%{name}.h
 Source2:	%{name}d.init
@@ -195,10 +195,17 @@ fi
 %attr(750,root,root) %{_sbindir}/autrace
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %dir %{_sysconfdir}/audit
+%dir %{_sysconfdir}/audispd
+%dir %{_sysconfdir}/audispd/plugins.d/
+%{_sysconfdir}/audispd/plugins.d/README-CONF_PLUGINS_D
+%dir %{_sysconfdir}/audispd/policies.d
+%{_sysconfdir}/audispd/policies.d/README-CONF_POLICIES_D
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit.rules
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audispd/audispd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
+%{_mandir}/man5/*
 %{_mandir}/man8/*
 
 %files libs
@@ -230,5 +237,11 @@ fi
 %attr(755,root,root) %{py_sitedir}/_auparse.so
 %{py_sitescriptdir}/audit.py[co]
 %{py_sitescriptdir}/auparse.py[co]
-%{py_sitescriptdir}/AuditMsg.py[co]
+%endif
+
+# TODO
+%if 0
+%files plugin-audisp2file
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/audispd-0.1-plugins/plugin-audisp2file
 %endif
