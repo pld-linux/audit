@@ -1,0 +1,11 @@
+--- audit-1.5/./audisp/vstr-1.0.15/src/Makefile.am~	2007-03-03 13:52:16.290623000 +0100
++++ audit-1.5/./audisp/vstr-1.0.15/src/Makefile.am	2007-03-03 13:52:33.682623000 +0100
+@@ -21,7 +21,7 @@
+ else
+ VSTR__RELOC_MAIN =  -DHAVE_NO_RELOC_MAIN
+ endif
+-CFLAGS = @CFLAGS@ @WARNS@ $(VSTR__RELOC_MAIN)
++AM_CFLAGS = @CFLAGS@ @WARNS@ $(VSTR__RELOC_MAIN)
+ 
+ if HAVE_POSIX_HOST
+ POSIX_HOST_SRC = vstr_sc_posix.c
