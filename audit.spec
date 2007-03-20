@@ -18,6 +18,7 @@ Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-swig-fix.patch
 Patch1:		%{name}-install.patch
+Patch2:		%{name}-am.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -112,6 +113,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 install -D %{SOURCE1} lib/linux/audit.h
 install -D %{SOURCE1} src/mt/linux/audit.h
