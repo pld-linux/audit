@@ -6,18 +6,16 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.4.1
+Version:	1.5.1
 Release:	1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	bd41d7ce365758ccf695471cff7bb802
+# Source0-md5:	9f410eae053012d1f4db7f60c45cf8bf
 # formerly http://people.redhat.com/sgrubb/audit/audit.h
-Source1:	%{name}.h
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
-Patch0:		%{name}-swig-fix.patch
-Patch1:		%{name}-install.patch
+Patch0:		%{name}-install.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -25,7 +23,7 @@ BuildRequires:	automake >= 1:1.9
 BuildRequires:	glibc-headers >= 6:2.3.6
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
-BuildRequires:	linux-libc-headers >= 2.6.11
+BuildRequires:	linux-libc-headers >= 7:2.6.20
 %if %{with python}
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
@@ -111,10 +109,6 @@ Pythonowy interfejs do biblioteki libaudit.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-
-install -D %{SOURCE1} lib/linux/audit.h
-install -D %{SOURCE1} src/mt/linux/audit.h
 
 %if !%{with python}
 sed '/PYTHON/d; s#swig/Makefile ##; s# audisp/Makefile##' -i configure.ac
@@ -187,18 +181,27 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README THANKS TODO sample.rules
+%doc AUTHORS ChangeLog README THANKS TODO sample.rules audisp/README-CONF*
+%attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
-%attr(754,root,root) /etc/rc.d/init.d/auditd
+%dir %{_libdir}/audispd-0.1-plugins
+%attr(755,root,root) %{_libdir}/audispd-0.1-plugins/plugin-audisp2file
+%dir %{_sysconfdir}/audispd
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audispd/audispd.conf
+%dir %{_sysconfdir}/audispd/plugins.d
+%dir %{_sysconfdir}/audispd/policies.d
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit.rules
+%attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
+%{_mandir}/man5/audispd.conf.5*
+%{_mandir}/man5/auditd.conf.5*
 %{_mandir}/man8/*
 
 %files libs
@@ -225,10 +228,8 @@ fi
 %if %{with python}
 %files -n python-audit
 %defattr(644,root,root,755)
-%attr(750,root,root) %{_sbindir}/audispd
 %attr(755,root,root) %{py_sitedir}/_audit.so
 %attr(755,root,root) %{py_sitedir}/_auparse.so
 %{py_sitescriptdir}/audit.py[co]
 %{py_sitescriptdir}/auparse.py[co]
-%{py_sitescriptdir}/AuditMsg.py[co]
 %endif
