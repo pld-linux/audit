@@ -111,8 +111,8 @@ Pythonowy interfejs do biblioteki libaudit.
 %patch0 -p1
 
 %if !%{with python}
-sed '/PYTHON/d; s#swig/Makefile ##; s# audisp/Makefile##' -i configure.ac
-sed 's/swig//; s/audisp//' -i Makefile.am
+sed '/PYTHON/d; s#swig/Makefile ##' -i configure.ac
+sed 's/swig//' -i Makefile.am
 %endif
 
 %build
