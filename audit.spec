@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.5.1
-Release:	1
+Version:	1.5.3
+Release:	0.1
 License:	GPL
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	9f410eae053012d1f4db7f60c45cf8bf
+# Source0-md5:	e94acafeb5fe8cf581b013ee5f02d95c
 # formerly http://people.redhat.com/sgrubb/audit/audit.h
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
@@ -111,7 +111,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %patch0 -p1
 
 %if !%{with python}
-sed '/PYTHON/d; s#swig/Makefile ##' -i configure.ac
+sed 's#swig/Makefile ##' -i configure.ac
 sed 's/swig//' -i Makefile.am
 %endif
 
@@ -181,26 +181,26 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README THANKS TODO sample.rules audisp/README-CONF*
+%doc AUTHORS ChangeLog README THANKS TODO sample.rules
 %attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
-%dir %{_libdir}/audispd-0.1-plugins
-%attr(755,root,root) %{_libdir}/audispd-0.1-plugins/plugin-audisp2file
-%dir %{_sysconfdir}/audispd
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audispd/audispd.conf
-%dir %{_sysconfdir}/audispd/plugins.d
-%dir %{_sysconfdir}/audispd/policies.d
+#%dir %{_libdir}/audispd-0.1-plugins
+#%attr(755,root,root) %{_libdir}/audispd-0.1-plugins/plugin-audisp2file
+#%dir %{_sysconfdir}/audispd
+#%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audispd/audispd.conf
+#%dir %{_sysconfdir}/audispd/plugins.d
+#%dir %{_sysconfdir}/audispd/policies.d
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit.rules
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
-%{_mandir}/man5/audispd.conf.5*
+#%{_mandir}/man5/audispd.conf.5*
 %{_mandir}/man5/auditd.conf.5*
 %{_mandir}/man8/*
 
