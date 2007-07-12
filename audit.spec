@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.5.3
+Version:	1.5.5
 Release:	0.1
-License:	GPL
+License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	e94acafeb5fe8cf581b013ee5f02d95c
+# Source0-md5:	c1822554521f8bc39879e5b5afab2d73
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -27,16 +27,17 @@ BuildRequires:	linux-libc-headers >= 7:2.6.20
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
-%else
-BuildRequires:	sed >= 4.0
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
+# use /lib, because this path is put in /usr/share/.../settings.py
+%define		_libexecdir	%{_prefix}/lib
 
 %description
 The audit package contains the user space utilities for storing and
@@ -51,7 +52,7 @@ jądrach Linuksa 2.6.
 %package libs
 Summary:	Dynamic audit libraries
 Summary(pl.UTF-8):	Biblioteki dynamiczne audit
-License:	LGPL
+License:	LGPL v2.1+
 Group:		Libraries
 
 %description libs
@@ -65,10 +66,10 @@ używających środowiska audytu.
 %package libs-devel
 Summary:	Header files for audit libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek audit
-License:	LGPL
+License:	LGPL v2.1+
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	linux-libc-headers >= 7:2.6.12.0-4
+Requires:	linux-libc-headers >= 7:2.6.20
 
 %description libs-devel
 The audit-libs-devel package contains the header files needed for
@@ -81,7 +82,7 @@ używających biblioteki środowiska audytu.
 %package libs-static
 Summary:	Static audit libraries
 Summary(pl.UTF-8):	Statyczne biblioteki audit
-License:	LGPL
+License:	LGPL v2.1+
 Group:		Development/Libraries
 Requires:	%{name}-libs-devel = %{version}-%{release}
 
@@ -96,7 +97,7 @@ używających środowiska audytu.
 %package -n python-audit
 Summary:	Python interface to libaudit library
 Summary(pl.UTF-8):	Pythonowy interfejs do biblioteki libaudit
-License:	LGPL
+License:	LGPL v2.1+
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
 
@@ -106,6 +107,23 @@ Python interface to libaudit library.
 %description -n python-audit -l pl.UTF-8
 Pythonowy interfejs do biblioteki libaudit.
 
+%package -n system-config-audit
+Summary:	Utility for editing audit configuration
+Summary(pl.UTF-8):	Narzędzie do zmiany konfiguracji audytu
+License:	GPL v2
+Group:		Applications/System
+Requires:	%{name} = %{version}-%{release}
+Version:	4.2
+Requires:	python-pygtk-libglade >= 2:2.0
+Requires:	usermode
+#Requires:	usermode-gtk	???
+
+%description -n system-config-audit
+An utility for editing audit configuration.
+
+%description -n system-config-audit -l pl.UTF-8
+Narzędzie do zmiany konfiguracji audytu.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -114,6 +132,8 @@ Pythonowy interfejs do biblioteki libaudit.
 sed 's#swig/Makefile ##' -i configure.ac
 sed 's/swig//' -i Makefile.am
 %endif
+
+sed -i -e 's,/main\.py,/main.pyc,' system-config-audit/src/system-config-audit.in
 
 %build
 %{__libtoolize}
@@ -161,6 +181,9 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
+
+%py_postclean $RPM_BUILD_ROOT%{_datadir}/system-config-audit
+%find_lang system-config-audit
 %endif
 
 %clean
@@ -225,4 +248,11 @@ fi
 %attr(755,root,root) %{py_sitedir}/auparse.so
 %{py_sitedir}/auparse-*.egg-info
 %{py_sitescriptdir}/audit.py[co]
+
+%files -n system-config-audit -f system-config-audit.lang
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/system-config-audit
+%attr(755,root,root) %{_libexecdir}/system-config-audit-server
+%{_datadir}/system-config-audit
+%{_desktopdir}/system-config-audit.desktop
 %endif
