@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.5.6
+Version:	1.6.1
 Release:	0.1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	72a7fb8e5ea41706f1db8a81c55a4b97
+# Source0-md5:	ce393ed76e25dd95f2d54ae27e7a25be
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -19,6 +19,7 @@ URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
+BuildRequires:	gettext-devel >= 0.14.6
 BuildRequires:	glibc-headers >= 6:2.3.6
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
@@ -141,6 +142,12 @@ sed -i -e 's,/main\.py,/main.pyc,' system-config-audit/src/system-config-audit.i
 %{__autoconf}
 %{__autoheader}
 %{__automake}
+cd system-config-audit
+%{__aclocal}
+%{__autoconf}
+%{__autoheader}
+%{__automake}
+cd ..
 %configure \
 	--with-apparmor
 # override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
@@ -211,12 +218,18 @@ fi
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
+%dir %{_sysconfdir}/audisp
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audispd.conf
+%dir %{_sysconfdir}/audisp/plugins.d
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit.rules
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
+%{_mandir}/man5/audispd.conf.5*
 %{_mandir}/man5/auditd.conf.5*
 %{_mandir}/man8/*
 
