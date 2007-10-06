@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.6.1
-Release:	0.1
+Version:	1.6.2
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	ce393ed76e25dd95f2d54ae27e7a25be
+# Source0-md5:	a95dbfa22e65669e4449f3accbe84aef
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -94,6 +94,18 @@ developing applications that need to use the audit framework.
 %description libs-static -l pl.UTF-8
 Ten pakiet zawiera statyczne biblioteki do tworzenia aplikacji
 używających środowiska audytu.
+
+%package audispd-plugins
+Summary:	Plugins for the audit event dispatcher
+Group:		Daemons
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-libs = %{version}-%{release}
+
+%description audispd-plugins
+The audispd-plugins package provides plugins for the real-time
+interface to the audit system, audispd. These plugins can do things
+like relay events to remote machines or analyze events for suspicious
+behavior.
 
 %package -n python-audit
 Summary:	Python interface to libaudit library
@@ -211,7 +223,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README THANKS TODO sample.rules
+%doc AUTHORS ChangeLog README THANKS TODO
 %attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
@@ -232,6 +244,8 @@ fi
 %{_mandir}/man5/audispd.conf.5*
 %{_mandir}/man5/auditd.conf.5*
 %{_mandir}/man8/*
+%dir %{_sysconfdir}/audisp
+%dir %{_sysconfdir}/audisp/plugins.d
 
 %files libs
 %defattr(644,root,root,755)
@@ -253,6 +267,11 @@ fi
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
+
+%files audispd-plugins
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_sbindir}/audisp-ids
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/*.conf
 
 %if %{with python}
 %files -n python-audit
