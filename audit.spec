@@ -21,6 +21,7 @@ BuildRequires:	automake >= 1:1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
 BuildRequires:	gettext-devel >= 0.14.6
 BuildRequires:	glibc-headers >= 6:2.3.6
+BuildRequires:	intltool
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 7:2.6.20
