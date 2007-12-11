@@ -128,7 +128,7 @@ License:	GPL v2
 Group:		Applications/System
 Requires:	%{name} = %{version}-%{release}
 Version:	0.4.3
-Requires:	python-pygtk-libglade >= 2:2.0
+Requires:	python-pygtk-glade >= 2:2.0
 Requires:	usermode
 #Requires:	usermode-gtk	???
 
