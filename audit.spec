@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.6.2
+Version:	1.6.3
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	a95dbfa22e65669e4449f3accbe84aef
+# Source0-md5:	11f7c682093cea6aa6b2e6be93f9d0e3
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -231,8 +231,10 @@ fi
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
+%attr(755,root,root) %{_sbindir}/audispd-zos-remote
 %dir %{_sysconfdir}/audisp
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audispd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/zos-remote.conf
 %dir %{_sysconfdir}/audisp/plugins.d
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
@@ -244,6 +246,7 @@ fi
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_mandir}/man5/audispd.conf.5*
 %{_mandir}/man5/auditd.conf.5*
+%{_mandir}/man5/zos-remote.conf.5*
 %{_mandir}/man8/*
 %dir %{_sysconfdir}/audisp
 %dir %{_sysconfdir}/audisp/plugins.d
