@@ -183,10 +183,10 @@ install -d $RPM_BUILD_ROOT%{_var}/log/audit
 
 install -d $RPM_BUILD_ROOT/%{_lib}
 mv -f $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
-ln -sf /%{_lib}/$(cd $RPM_BUILD_ROOT/%{_lib} ; echo libaudit.so.*.*.*) \
+ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libaudit.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libaudit.so
 mv -f $RPM_BUILD_ROOT%{_libdir}/libauparse.so.* $RPM_BUILD_ROOT/%{_lib}
-ln -sf /%{_lib}/$(cd $RPM_BUILD_ROOT/%{_lib} ; echo libauparse.so.*.*.*) \
+ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libauparse.so
 
 # We manually install this since Makefile doesn't
@@ -254,7 +254,9 @@ fi
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) /%{_lib}/libaudit.so.*.*.*
+%attr(755,root,root) %ghost /%{_lib}/libaudit.so.0
 %attr(755,root,root) /%{_lib}/libauparse.so.*.*.*
+%attr(755,root,root) %ghost /%{_lib}/libauparse.so.0
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libaudit.conf
 
 %files libs-devel
