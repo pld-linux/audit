@@ -98,6 +98,7 @@ używających środowiska audytu.
 
 %package audispd-plugins
 Summary:	Plugins for the audit event dispatcher
+Summary(pl.UTF-8):	Wtyczki dla systemu przekazywania zdarzeń audytowych
 Group:		Daemons
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-libs = %{version}-%{release}
@@ -107,6 +108,12 @@ The audispd-plugins package provides plugins for the real-time
 interface to the audit system, audispd. These plugins can do things
 like relay events to remote machines or analyze events for suspicious
 behavior.
+
+%description audispd-plugins -l pl.UTF-8
+Pakiet audispd-plugins zawiera wtyczki dla interfejsu czasu
+rzeczywistego systemu audytowego - audisp. Wtyczki te mogą wykonywać
+czynności takie jak przekazywanie zdarzen na zdalne maszyny czy
+analiza zdarzeń pod kątem podejrzanego zachowania.
 
 %package -n python-audit
 Summary:	Python interface to libaudit library
