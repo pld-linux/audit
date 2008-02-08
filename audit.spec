@@ -6,12 +6,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.6.3
+Version:	1.6.7
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	11f7c682093cea6aa6b2e6be93f9d0e3
+# Source0-md5:	589a5e3a33ee8df891fc83bddca79f5d
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -25,6 +25,7 @@ BuildRequires:	intltool
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 7:2.6.20
+BuildRequires:	openldap-devel
 %if %{with python}
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	rpm-pythonprov
@@ -95,25 +96,6 @@ developing applications that need to use the audit framework.
 %description libs-static -l pl.UTF-8
 Ten pakiet zawiera statyczne biblioteki do tworzenia aplikacji
 używających środowiska audytu.
-
-%package audispd-plugins
-Summary:	Plugins for the audit event dispatcher
-Summary(pl.UTF-8):	Wtyczki dla systemu przekazywania zdarzeń audytowych
-Group:		Daemons
-Requires:	%{name} = %{version}-%{release}
-Requires:	%{name}-libs = %{version}-%{release}
-
-%description audispd-plugins
-The audispd-plugins package provides plugins for the real-time
-interface to the audit system, audispd. These plugins can do things
-like relay events to remote machines or analyze events for suspicious
-behavior.
-
-%description audispd-plugins -l pl.UTF-8
-Pakiet audispd-plugins zawiera wtyczki dla interfejsu czasu
-rzeczywistego systemu audytowego - audisp. Wtyczki te mogą wykonywać
-czynności takie jak przekazywanie zdarzen na zdalne maszyny czy
-analiza zdarzeń pod kątem podejrzanego zachowania.
 
 %package -n python-audit
 Summary:	Python interface to libaudit library
@@ -235,6 +217,7 @@ fi
 %attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
+%attr(750,root,root) %{_sbindir}/aulastlog
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
@@ -244,6 +227,7 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/zos-remote.conf
 %dir %{_sysconfdir}/audisp/plugins.d
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
@@ -280,11 +264,6 @@ fi
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
-
-%files audispd-plugins
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_sbindir}/audisp-ids
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/*.conf
 
 %if %{with python}
 %files -n python-audit
