@@ -21,11 +21,7 @@ EXTRAOPTIONS=
 # Get service config - may override defaults
 [ -f /etc/sysconfig/auditd ] && . /etc/sysconfig/auditd
 
-RETVAL=0
-
-# See how we were called.
-case "$1" in
-  start)
+start() {
     	if [ ! -f /var/lock/subsys/auditd ]; then
 		msg_starting auditd
 		unset HOME MAIL USER USERNAME
@@ -37,10 +33,10 @@ case "$1" in
 	else
 		msg_already_running auditd
 	fi
-	;;
-  stop)
+}
+
+stop() {
 	if [ -f /var/lock/subsys/auditd ]; then
-		# Stop daemons.
 		msg_stopping auditd
 		killproc auditd
 		rm -f /var/lock/subsys/auditd
@@ -51,11 +47,32 @@ case "$1" in
 	else
 		msg_not_running auditd
 	fi
+}
+
+condrestart() {
+	if [ -f /var/lock/subsys/auditd ]; then
+		stop
+		start
+	else
+		msg_not_running auditd
+		RETVAL=$1
+	fi
+}
+
+RETVAL=0
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
 	;;
   restart)
-	$0 stop
-	$0 start
-	exit $?
+	stop
+	start
+	;;
+  try-restart)
+	condrestart 0
 	;;
   reload|force-reload)
 	if [ -f /var/lock/subsys/auditd ]; then
@@ -72,7 +89,7 @@ case "$1" in
 	RETVAL=$?
 	;;
   *)
-	msg_usage "$0 {start|stop|restart|reload|force-reload|status}"
+	msg_usage "$0 {start|stop|restart|try-restart|reload|force-reload|status}"
 	RETVAL=3
 esac
 
