@@ -1,17 +1,18 @@
 #
 # Conditional build:
 %bcond_without	pie	# auditd as PIE binary
+%bcond_without	prelude	# prelude audisp plugin
 %bcond_without	python	# don't build python bindings
 #
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.6.8
-Release:	2
+Version:	1.6.9
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	67cd6d2995bbb0a8b3c37ce484d758f5
+# Source0-md5:	7e055793c057883f39b10d8ba783de98
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -23,6 +24,7 @@ BuildRequires:	gettext-devel >= 0.14.6
 BuildRequires:	glibc-headers >= 6:2.3.6
 BuildRequires:	intltool
 BuildRequires:	libstdc++-devel
+%{?with_prelude:BuildRequires:	libprelude-devel}
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 7:2.6.20
 BuildRequires:	openldap-devel
@@ -36,6 +38,7 @@ BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
+Obsoletes:	audit-audispd-plugins
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
@@ -97,6 +100,22 @@ developing applications that need to use the audit framework.
 Ten pakiet zawiera statyczne biblioteki do tworzenia aplikacji
 używających środowiska audytu.
 
+%package plugin-prelude
+Summary:	prelude plugin for audispd
+Summary(pl.UTF-8):	Wtyczka prelude dla audispd
+Group:		Daemons
+Requires:	%{name} = %{version}-%{release}
+
+%description plugin-prelude
+audisp-prelude is a plugin for the audit event dispatcher daemon,
+audispd, that uses libprelude to send IDMEF alerts for possible
+Intrusion Detection events.
+
+%description plugin-prelude -l pl.UTF-8
+audisp-prelude to wtyczka demona audispd przekazującego zdarzenia
+audytowe wykorzystująca libprelude do wysyłania alarmów IDMEF o
+prawdopodobnych zdarzeniach IDS.
+
 %package -n python-audit
 Summary:	Python interface to libaudit library
 Summary(pl.UTF-8):	Pythonowy interfejs do biblioteki libaudit
@@ -116,7 +135,7 @@ Summary(pl.UTF-8):	Narzędzie do zmiany konfiguracji audytu
 License:	GPL v2
 Group:		Applications/System
 Requires:	%{name} = %{version}-%{release}
-Version:	0.4.3
+Version:	0.4.6
 Requires:	python-pygtk-glade >= 2:2.0
 Requires:	usermode
 #Requires:	usermode-gtk	???
@@ -145,13 +164,15 @@ sed -i -e 's,/main\.py,/main.pyc,' system-config-audit/src/system-config-audit.i
 %{__autoheader}
 %{__automake}
 cd system-config-audit
+%{__libtoolize}
 %{__aclocal}
 %{__autoconf}
 %{__autoheader}
 %{__automake}
 cd ..
 %configure \
-	--with-apparmor
+	--with-apparmor \
+	%{?with_prelude:--with-prelude}
 # override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \
 	%{!?with_pie:auditd_CFLAGS="-D_REENTRANT -D_GNU_SOURCE" auditd_LDFLAGS="-Wl,-z,relro"}
@@ -237,10 +258,16 @@ fi
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_mandir}/man5/audispd.conf.5*
 %{_mandir}/man5/auditd.conf.5*
+%{_mandir}/man5/ausearch-expression.5*
 %{_mandir}/man5/zos-remote.conf.5*
-%{_mandir}/man8/*
-%dir %{_sysconfdir}/audisp
-%dir %{_sysconfdir}/audisp/plugins.d
+%{_mandir}/man8/audispd-zos-remote.8*
+%{_mandir}/man8/audispd.8*
+%{_mandir}/man8/auditctl.8*
+%{_mandir}/man8/auditd.8*
+%{_mandir}/man8/aulastlog.8*
+%{_mandir}/man8/aureport.8*
+%{_mandir}/man8/ausearch.8*
+%{_mandir}/man8/autrace.8*
 
 %files libs
 %defattr(644,root,root,755)
@@ -258,12 +285,26 @@ fi
 %{_libdir}/libauparse.la
 %{_includedir}/auparse*.h
 %{_includedir}/libaudit.h
-%{_mandir}/man3/*
+%{_mandir}/man3/audit_*.3*
+%{_mandir}/man3/auparse_*.3*
+%{_mandir}/man3/ausearch_*.3*
+%{_mandir}/man3/get_auditfail_action.3*
+%{_mandir}/man3/set_aumessage_mode.3*
 
 %files libs-static
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
+
+%if %{with prelude}
+%files plugin-prelude
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_sbindir}/audisp-prelude
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audisp-prelude.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/au-prelude.conf
+%{_mandir}/man5/audisp-prelude.conf.5*
+%{_mandir}/man8/audisp-prelude.8*
+%endif
 
 %if %{with python}
 %files -n python-audit
