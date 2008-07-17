@@ -7,12 +7,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.6.9
+Version:	1.7.4
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	7e055793c057883f39b10d8ba783de98
+# Source0-md5:	ca3b9195b43ed341b03e6bccdb8ca57d
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -235,19 +235,23 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog README THANKS TODO
+%attr(750,root,root) %{_bindir}/aulastlog
+%attr(750,root,root) %{_bindir}/ausyscall
 %attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
-%attr(750,root,root) %{_sbindir}/aulastlog
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
+%attr(755,root,root) %{_sbindir}/audisp-remote
 %attr(755,root,root) %{_sbindir}/audispd-zos-remote
 %dir %{_sysconfdir}/audisp
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audispd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audisp-remote.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/zos-remote.conf
 %dir %{_sysconfdir}/audisp/plugins.d
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/au-remote.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit
@@ -257,9 +261,11 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_mandir}/man5/audispd.conf.5*
+%{_mandir}/man5/audisp-remote.conf.5*
 %{_mandir}/man5/auditd.conf.5*
 %{_mandir}/man5/ausearch-expression.5*
 %{_mandir}/man5/zos-remote.conf.5*
+%{_mandir}/man8/audisp-remote.8*
 %{_mandir}/man8/audispd-zos-remote.8*
 %{_mandir}/man8/audispd.8*
 %{_mandir}/man8/auditctl.8*
@@ -267,6 +273,7 @@ fi
 %{_mandir}/man8/aulastlog.8*
 %{_mandir}/man8/aureport.8*
 %{_mandir}/man8/ausearch.8*
+%{_mandir}/man8/ausyscall.8*
 %{_mandir}/man8/autrace.8*
 
 %files libs
