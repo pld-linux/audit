@@ -8,7 +8,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	1.7.4
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -135,7 +135,7 @@ Summary(pl.UTF-8):	Narzędzie do zmiany konfiguracji audytu
 License:	GPL v2
 Group:		Applications/System
 Requires:	%{name} = %{version}-%{release}
-Version:	0.4.6
+Version:	0.4.7
 Requires:	python-pygtk-glade >= 2:2.0
 Requires:	usermode
 #Requires:	usermode-gtk	???
