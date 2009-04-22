@@ -7,12 +7,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.7.12
+Version:	1.7.13
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	d245861c33d714eba3e14a3582e1c214
+# Source0-md5:	967776cbec046043ef02ffefe0e89cb7
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -320,7 +320,7 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{py_sitedir}/_audit.so
 %attr(755,root,root) %{py_sitedir}/auparse.so
-%{py_sitescriptdir}/audit.py[co]
+%{py_sitedir}/audit.py[co]
 
 %files -n system-config-audit -f system-config-audit.lang
 %defattr(644,root,root,755)
