@@ -25,7 +25,7 @@ start() {
     	if [ ! -f /var/lock/subsys/auditd ]; then
 		msg_starting auditd
 		unset HOME MAIL USER USERNAME
-		daemon auditd "$EXTRAOPTIONS"
+		daemon /sbin/auditd "$EXTRAOPTIONS"
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/auditd
 		# Load the default rules
