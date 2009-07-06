@@ -8,7 +8,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	1.7.13
-Release:	4
+Release:	5
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -16,12 +16,14 @@ Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
+Patch1:		%{name}-pthread.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
 BuildRequires:	gettext-devel >= 0.14.6
 BuildRequires:	glibc-headers >= 6:2.3.6
+BuildRequires:	heimdal-devel
 BuildRequires:	intltool
 BuildRequires:	libstdc++-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
@@ -149,6 +151,7 @@ Narzędzie do zmiany konfiguracji audytu.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %if !%{with python}
 sed 's#swig/Makefile ##' -i configure.ac
@@ -172,6 +175,7 @@ cd system-config-audit
 cd ..
 %configure \
 	--with-apparmor \
+	--enable-gssapi-krb5 \
 	%{?with_prelude:--with-prelude}
 # override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \

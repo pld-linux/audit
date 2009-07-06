@@ -1,0 +1,11 @@
+--- audit-1.7.13/src/Makefile.am~	2009-04-21 20:47:18.000000000 +0200
++++ audit-1.7.13/src/Makefile.am	2009-07-06 13:01:03.410269265 +0200
+@@ -34,7 +34,7 @@
+ auditd_CFLAGS = -fPIE -DPIE -g -D_REENTRANT -D_GNU_SOURCE -fno-strict-aliasing 
+ auditd_LDFLAGS = -pie -Wl,-z,relro
+ auditd_DEPENDENCIES = mt/libauditmt.a libev/libev.a
+-auditd_LDADD = @LIBWRAP_LIBS@ @libev_LIBS@ -Llibev -lev -lrt -lm $(gss_libs)
++auditd_LDADD = @LIBWRAP_LIBS@ @libev_LIBS@ -Llibev -lev -lrt -lm $(gss_libs) $(LDADD)
+ 
+ auditctl_SOURCES = auditctl.c auditctl-llist.c delete_all.c
+ auditctl_DEPENDENCIES = mt/libauditmt.a 
