@@ -7,16 +7,17 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	1.7.13
-Release:	5
+Version:	2.0
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	967776cbec046043ef02ffefe0e89cb7
+# Source0-md5:	d0c064c4646f8fe5c50de789c627f2da
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
 Patch1:		%{name}-pthread.patch
+Patch2:		%{name}-m4.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -152,13 +153,12 @@ Narzędzie do zmiany konfiguracji audytu.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %if !%{with python}
 sed 's#swig/Makefile ##' -i configure.ac
 sed 's/swig//' -i Makefile.am
 %endif
-
-sed -i -e 's,/main\.py,/main.pyc,' system-config-audit/src/system-config-audit.in
 
 %build
 %{__libtoolize}
@@ -166,13 +166,6 @@ sed -i -e 's,/main\.py,/main.pyc,' system-config-audit/src/system-config-audit.i
 %{__autoconf}
 %{__autoheader}
 %{__automake}
-cd system-config-audit
-%{__libtoolize}
-%{__aclocal}
-%{__autoconf}
-%{__autoheader}
-%{__automake}
-cd ..
 %configure \
 	--with-apparmor \
 	--enable-gssapi-krb5 \
@@ -215,9 +208,6 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
 rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
-
-%py_postclean $RPM_BUILD_ROOT%{_datadir}/system-config-audit
-%find_lang system-config-audit
 %endif
 
 %clean
@@ -285,7 +275,7 @@ fi
 %files libs
 %defattr(644,root,root,755)
 %attr(755,root,root) /%{_lib}/libaudit.so.*.*.*
-%attr(755,root,root) %ghost /%{_lib}/libaudit.so.0
+%attr(755,root,root) %ghost /%{_lib}/libaudit.so.1
 %attr(755,root,root) /%{_lib}/libauparse.so.*.*.*
 %attr(755,root,root) %ghost /%{_lib}/libauparse.so.0
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libaudit.conf
@@ -325,11 +315,4 @@ fi
 %attr(755,root,root) %{py_sitedir}/_audit.so
 %attr(755,root,root) %{py_sitedir}/auparse.so
 %{py_sitedir}/audit.py[co]
-
-%files -n system-config-audit -f system-config-audit.lang
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/system-config-audit
-%attr(755,root,root) %{_libexecdir}/system-config-audit-server
-%{_datadir}/system-config-audit
-%{_desktopdir}/system-config-audit.desktop
 %endif
