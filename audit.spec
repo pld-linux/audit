@@ -7,12 +7,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.0
+Version:	2.0.4
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	d0c064c4646f8fe5c50de789c627f2da
+# Source0-md5:	90d2c70e74041fca5ac4b999cb915d68
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -26,6 +26,7 @@ BuildRequires:	gettext-devel >= 0.14.6
 BuildRequires:	glibc-headers >= 6:2.3.6
 BuildRequires:	heimdal-devel
 BuildRequires:	intltool
+BuildRequires:	libcap-ng-devel
 BuildRequires:	libstdc++-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
 BuildRequires:	libtool
@@ -131,23 +132,6 @@ Python interface to libaudit library.
 
 %description -n python-audit -l pl.UTF-8
 Pythonowy interfejs do biblioteki libaudit.
-
-%package -n system-config-audit
-Summary:	Utility for editing audit configuration
-Summary(pl.UTF-8):	Narzędzie do zmiany konfiguracji audytu
-License:	GPL v2
-Group:		Applications/System
-Requires:	%{name} = %{version}-%{release}
-Version:	0.4.8
-Requires:	python-pygtk-glade >= 2:2.0
-Requires:	usermode
-#Requires:	usermode-gtk	???
-
-%description -n system-config-audit
-An utility for editing audit configuration.
-
-%description -n system-config-audit -l pl.UTF-8
-Narzędzie do zmiany konfiguracji audytu.
 
 %prep
 %setup -q
@@ -260,6 +244,7 @@ fi
 %{_mandir}/man5/auditd.conf.5*
 %{_mandir}/man5/ausearch-expression.5*
 %{_mandir}/man5/zos-remote.conf.5*
+%{_mandir}/man7/audit.rules.7*
 %{_mandir}/man8/audisp-remote.8*
 %{_mandir}/man8/audispd-zos-remote.8*
 %{_mandir}/man8/audispd.8*
@@ -279,6 +264,7 @@ fi
 %attr(755,root,root) /%{_lib}/libauparse.so.*.*.*
 %attr(755,root,root) %ghost /%{_lib}/libauparse.so.0
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libaudit.conf
+%{_mandir}/man5/libaudit.conf.5*
 
 %files libs-devel
 %defattr(644,root,root,755)
