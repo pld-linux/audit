@@ -17,6 +17,7 @@ PATH=/sbin:/bin:/usr/bin:/usr/sbin
 
 AUDITD_CLEAN_STOP=yes
 EXTRAOPTIONS=
+AUDIT_RULES=/etc/audit/audit.rules
 
 # Get service config - may override defaults
 [ -f /etc/sysconfig/auditd ] && . /etc/sysconfig/auditd
@@ -29,7 +30,7 @@ start() {
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/auditd
 		# Load the default rules
-		[ -f /etc/audit.rules ] && /sbin/auditctl -R /etc/audit.rules >/dev/null
+		[ -f $AUDIT_RULES ] && /sbin/auditctl -R $AUDIT_RULES >/dev/null
 	else
 		msg_already_running auditd
 	fi
