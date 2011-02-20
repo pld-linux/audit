@@ -7,12 +7,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.0.5
-Release:	2
+Version:	2.0.6
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	1326b712dab362acbc8686cd91f8e3e1
+# Source0-md5:	0a0000160b5cd74dd6b0e93acefa3f1f
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -21,12 +21,9 @@ URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
 %{?with_pie:BuildRequires:	gcc >= 5:3.4}
-BuildRequires:	gettext-devel >= 0.14.6
 BuildRequires:	glibc-headers >= 6:2.3.6
 BuildRequires:	heimdal-devel
-BuildRequires:	intltool
 BuildRequires:	libcap-ng-devel
-BuildRequires:	libstdc++-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
 BuildRequires:	libtool
 BuildRequires:	linux-libc-headers >= 7:2.6.20
@@ -137,7 +134,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %patch0 -p1
 %patch1 -p1
 
-%if !%{with python}
+%if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
 sed 's/swig//' -i Makefile.am
 %endif
@@ -186,10 +183,10 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
 %if %{with python}
-%py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
-%py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
-rm -f $RPM_BUILD_ROOT%{py_sitescriptdir}/*.py
-rm -f $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
+%py_comp $RPM_BUILD_ROOT%{py_sitedir}
+%py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
+%{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.py
+%{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 %endif
 
 %clean
