@@ -7,16 +7,17 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.1
+Version:	2.1.1
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	5a936571764a4d39eae69c2958331e20
+# Source0-md5:	24c15eb02a100b0fcf809a29b32f0dbd
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
 Patch1:		%{name}-m4.patch
+Patch2:		%{name}-nolibs.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -26,6 +27,7 @@ BuildRequires:	heimdal-devel
 BuildRequires:	libcap-ng-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
 BuildRequires:	libtool
+BuildRequires:	libwrap-devel
 BuildRequires:	linux-libc-headers >= 7:2.6.20
 BuildRequires:	openldap-devel
 %if %{with python}
@@ -133,6 +135,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
@@ -146,8 +149,9 @@ sed 's/swig//' -i Makefile.am
 %{__autoheader}
 %{__automake}
 %configure \
-	--with-apparmor \
 	--enable-gssapi-krb5 \
+	--with-apparmor \
+	--with-libwrap \
 	%{?with_prelude:--with-prelude}
 # override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
 %{__make} \

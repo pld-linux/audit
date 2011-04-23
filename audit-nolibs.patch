@@ -1,0 +1,20 @@
+--- audit-2.1.1/configure.ac.orig	2011-04-20 22:53:56.000000000 +0200
++++ audit-2.1.1/configure.ac	2011-04-23 08:24:34.033844797 +0200
+@@ -193,8 +193,6 @@
+ 		AC_CHECK_HEADER(tcpd.h, [],
+ 			AC_MSG_ERROR([Could not find libwrap headers]),)
+ 		AC_CHECK_LIB(wrap, request_init, [ LIBWRAP_LIBS="-lwrap" ])
+-		AC_CHECK_LIB(nsl, yp_get_default_domain, [
+-			LIBWRAP_LIBS="$LIBWRAP_LIBS -lnsl" ])
+ 		;;
+ 	*)
+ 		AC_MSG_RESULT(yes)
+@@ -206,8 +204,6 @@
+ 		AC_CHECK_HEADER(tcpd.h, [],
+ 			AC_MSG_ERROR([Could not find libwrap headers]))
+ 		AC_CHECK_LIB(wrap, request_init, [])
+-		AC_CHECK_LIB(nsl, yp_get_default_domain, [
+-			LIBWRAP_LIBS="$LIBWRAP_LIBS -lnsl" ])
+ 		OLDLIBS="$LIBS"
+ 		LIBS="$LIBWRAP_LIBS $LIBS"
+ 		AC_TRY_LINK([ int allow_severity; int deny_severity; ],
