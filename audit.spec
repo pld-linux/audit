@@ -8,13 +8,14 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.1.3
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 # Source0-md5:	abf26e3ac09f666905c5636dd24611fa
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
+Source4:	%{name}d.service
 Patch0:		%{name}-install.patch
 Patch1:		%{name}-m4.patch
 Patch2:		%{name}-nolibs.patch
@@ -131,6 +132,14 @@ Python interface to libaudit library.
 %description -n python-audit -l pl.UTF-8
 Pythonowy interfejs do biblioteki libaudit.
 
+%package systemd
+Summary:	systemd units for audit
+Group:		Base
+Requires:	%{name} = %{version}-%{release}
+
+%description systemd
+systemd units for audit.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -180,11 +189,12 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libauparse.so
 
 # We manually install this since Makefile doesn't
-install -d $RPM_BUILD_ROOT%{_includedir}
+install -d $RPM_BUILD_ROOT{%{_includedir},/lib/systemd/system}
 install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
 
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
+install %{SOURCE4} $RPM_BUILD_ROOT/lib/systemd/system
 
 %if %{with python}
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
@@ -283,6 +293,10 @@ fi
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
+
+%files systemd
+%defattr(644,root,root,755)
+/lib/systemd/system/auditd.service
 
 %if %{with prelude}
 %files plugin-prelude
