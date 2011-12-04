@@ -8,7 +8,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.1.3
-Release:	2
+Release:	3
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -36,7 +36,7 @@ BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.268
+BuildRequires:	rpmbuild(macros) >= 1.623
 BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
@@ -189,12 +189,12 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libauparse.so
 
 # We manually install this since Makefile doesn't
-install -d $RPM_BUILD_ROOT{%{_includedir},/lib/systemd/system}
+install -d $RPM_BUILD_ROOT{%{_includedir},%{systemdunitdir}}
 install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
 
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
-install %{SOURCE4} $RPM_BUILD_ROOT/lib/systemd/system
+install %{SOURCE4} $RPM_BUILD_ROOT%{systemdunitdir}
 
 %if %{with python}
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
@@ -218,6 +218,16 @@ if [ "$1" = "0" ]; then
 	%service auditd stop
 	/sbin/chkconfig --del auditd
 fi
+
+%post systemd
+%systemd_post
+%systemd_enable auditd.service
+
+%preun systemd
+%systemd_preun auditd.service
+
+%postun systemd
+%systemd_postun auditd.service
 
 %files
 %defattr(644,root,root,755)
@@ -296,7 +306,7 @@ fi
 
 %files systemd
 %defattr(644,root,root,755)
-/lib/systemd/system/auditd.service
+%{systemdunitdir}/auditd.service
 
 %if %{with prelude}
 %files plugin-prelude
