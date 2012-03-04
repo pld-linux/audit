@@ -8,7 +8,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.2
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -41,7 +41,9 @@ BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
+Requires:	systemd-units
 Obsoletes:	audit-audispd-plugins
+Obsoletes:	audit-systemd
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
@@ -132,19 +134,6 @@ Python interface to libaudit library.
 %description -n python-audit -l pl.UTF-8
 Pythonowy interfejs do biblioteki libaudit.
 
-%package systemd
-Summary:	systemd units for audit
-Summary(pl.UTF-8):	Jednostki systemd dla usługi audit
-Group:		Base
-Requires:	%{name} = %{version}-%{release}
-Requires:	systemd-units
-
-%description systemd
-systemd units for audit.
-
-%description systemd -l pl.UTF-8
-Jednostki systemd dla usługi audit.
-
 %prep
 %setup -q
 %patch0 -p1
@@ -217,22 +206,20 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add auditd
 %service auditd restart "audit daemon"
+%systemd_post auditd.service
 
 %preun
 if [ "$1" = "0" ]; then
 	%service auditd stop
 	/sbin/chkconfig --del auditd
 fi
-
-%post systemd
-%systemd_post
-%systemd_enable auditd.service
-
-%preun systemd
 %systemd_preun auditd.service
 
-%postun systemd
-%systemd_postun auditd.service
+%postun
+%systemd_reload
+
+%triggerpostun -- %{name} < 2.2-2
+%systemd_trigger auditd.service
 
 %files
 %defattr(644,root,root,755)
@@ -263,6 +250,7 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit.rules
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
+%{systemdunitdir}/auditd.service
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_mandir}/man5/audispd.conf.5*
 %{_mandir}/man5/audisp-remote.conf.5*
@@ -310,10 +298,6 @@ fi
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
-
-%files systemd
-%defattr(644,root,root,755)
-%{systemdunitdir}/auditd.service
 
 %if %{with prelude}
 %files plugin-prelude
