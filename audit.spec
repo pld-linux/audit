@@ -7,12 +7,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.1.3
-Release:	3
+Version:	2.2
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	abf26e3ac09f666905c5636dd24611fa
+# Source0-md5:	b60366dbe0c3a7497bdd8b3f7065b266
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Source4:	%{name}d.service
@@ -29,7 +29,7 @@ BuildRequires:	libcap-ng-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
 BuildRequires:	libtool
 BuildRequires:	libwrap-devel
-BuildRequires:	linux-libc-headers >= 7:2.6.20
+BuildRequires:	linux-libc-headers >= 7:2.6.30
 BuildRequires:	openldap-devel
 %if %{with python}
 BuildRequires:	python-devel >= 1:2.5
@@ -78,7 +78,7 @@ Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek audit
 License:	LGPL v2.1+
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	linux-libc-headers >= 7:2.6.20
+Requires:	linux-libc-headers >= 7:2.6.30
 
 %description libs-devel
 The audit-libs-devel package contains the header files needed for
@@ -134,11 +134,16 @@ Pythonowy interfejs do biblioteki libaudit.
 
 %package systemd
 Summary:	systemd units for audit
+Summary(pl.UTF-8):	Jednostki systemd dla usługi audit
 Group:		Base
 Requires:	%{name} = %{version}-%{release}
+Requires:	systemd-units
 
 %description systemd
 systemd units for audit.
+
+%description systemd -l pl.UTF-8
+Jednostki systemd dla usługi audit.
 
 %prep
 %setup -q
@@ -235,6 +240,7 @@ fi
 %attr(750,root,root) %{_bindir}/aulast
 %attr(750,root,root) %{_bindir}/aulastlog
 %attr(750,root,root) %{_bindir}/ausyscall
+%attr(750,root,root) %{_bindir}/auvirt
 %attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
@@ -275,6 +281,7 @@ fi
 %{_mandir}/man8/ausearch.8*
 %{_mandir}/man8/ausyscall.8*
 %{_mandir}/man8/autrace.8*
+%{_mandir}/man8/auvirt.8*
 
 %files libs
 %defattr(644,root,root,755)
