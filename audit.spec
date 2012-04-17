@@ -8,7 +8,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.2.1
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -39,9 +39,10 @@ BuildRequires:	swig-python
 BuildRequires:	rpmbuild(macros) >= 1.623
 BuildRequires:	sed >= 4.0
 Requires(post,preun):	/sbin/chkconfig
+Requires(post,preun,postun):	systemd-units >= 38
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
-Requires:	systemd-units
+Requires:	systemd-units >= 38
 Obsoletes:	audit-audispd-plugins
 Obsoletes:	audit-systemd
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
