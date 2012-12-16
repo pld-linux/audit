@@ -1,0 +1,47 @@
+--- audit-2.2.2/init.d/Makefile.am.orig	2012-12-16 08:46:05.098046590 +0100
++++ audit-2.2.2/init.d/Makefile.am	2012-12-16 09:26:03.771329926 +0100
+@@ -27,11 +27,10 @@
+ dispconfig = audispd.conf
+ dispconfigdir = $(sysconfdir)/audisp
+ if ENABLE_SYSTEMD
+-initdir = /usr/lib/systemd/system
+-else
++systemdunitdir = /lib/systemd/system
++endif
+ initdir = $(sysconfdir)/rc.d/init.d
+ sysconfigdir = $(sysconfdir)/sysconfig
+-endif
+ 
+ auditdir = $(sysconfdir)/audit
+ dist_audit_DATA = auditd.conf audit.rules
+@@ -39,26 +38,20 @@
+ install-data-hook:
+ 	$(INSTALL_DATA) -D -m 640 ${srcdir}/${dispconfig} ${DESTDIR}${dispconfigdir}/${dispconfig}
+ 	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}/${libconfig}
+-if ENABLE_SYSTEMD
+-else
+ 	$(INSTALL_DATA) -D -m 640 ${srcdir}/auditd.sysconfig ${DESTDIR}${sysconfigdir}/auditd
+-endif
+ 
+ install-exec-hook:
+ if ENABLE_SYSTEMD
+-	mkdir -p ${DESTDIR}${initdir}
+-	$(INSTALL_SCRIPT) -D -m 640 ${srcdir}/auditd.service ${DESTDIR}${initdir}/auditd.service
+-else
+-	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
++	$(INSTALL_SCRIPT) -D -m 640 ${srcdir}/auditd.service ${DESTDIR}${systemdunitdir}/auditd.service
+ endif
++	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
+ 
+ uninstall-hook:
+ 	rm ${DESTDIR}${dispconfigdir}/${dispconfig}
+ 	rm ${DESTDIR}${sysconfdir}/${libconfig}
+ if ENABLE_SYSTEMD
+-	rm ${DESTDIR}${initdir}/auditd.service
+-else
++	rm ${DESTDIR}${systemdunitdir}/auditd.service
++endif
+ 	rm ${DESTDIR}${sysconfigdir}/auditd
+ 	rm ${DESTDIR}${initdir}/auditd
+-endif
+ 

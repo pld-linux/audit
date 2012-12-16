@@ -1,20 +1,21 @@
+# TODO: revise our auditd.service vs upstream version
 #
 # Conditional build:
-%bcond_without	kerberos5 # do not build with heimdal
-%bcond_without	pie	# auditd as PIE binary
-%bcond_without	prelude	# prelude audisp plugin
-%bcond_without	python	# don't build python bindings
-%bcond_without	zos_remote # do not build zos-remote audisp plugin (LDAP dep)
+%bcond_without	kerberos5	# do not build with heimdal
+%bcond_without	pie		# auditd as PIE binary
+%bcond_without	prelude		# prelude audisp plugin
+%bcond_without	python		# don't build python bindings
+%bcond_without	zos_remote	# do not build zos-remote audisp plugin (LDAP dep)
 #
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.2.1
-Release:	2
+Version:	2.2.2
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	dc099fcb2f9242d47ecc35b46d71dfd1
+# Source0-md5:	6641fde111cf5dfda6d4282ab8410df5
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Source4:	%{name}d.service
@@ -22,6 +23,7 @@ Patch0:		%{name}-install.patch
 Patch1:		%{name}-m4.patch
 Patch2:		%{name}-nolibs.patch
 Patch3:		%{name}-no_zos_remote.patch
+Patch4:		%{name}-systemd-notonly.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -144,6 +146,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %patch1 -p1
 %patch2 -p1
 %{!?with_zos_remote:%patch3 -p1}
+%patch4 -p1
 
 %if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
@@ -158,6 +161,7 @@ sed 's/swig//' -i Makefile.am
 %{__automake}
 %configure \
 	%{?with_kerberos5:--enable-gssapi-krb5} \
+	--enable-systemd \
 	--with-apparmor \
 	--with-libwrap \
 	%{?with_prelude:--with-prelude}
@@ -240,15 +244,15 @@ fi
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
 %attr(755,root,root) %{_sbindir}/audisp-remote
-%{?with_zose_remote:%attr(755,root,root) %{_sbindir}/audispd-zos-remote}
+%{?with_zos_remote:%attr(755,root,root) %{_sbindir}/audispd-zos-remote}
 %dir %{_sysconfdir}/audisp
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audispd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audisp-remote.conf
-%{?with_zose_remote:%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/zos-remote.conf}
+%{?with_zos_remote:%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/zos-remote.conf}
 %dir %{_sysconfdir}/audisp/plugins.d
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/au-remote.conf
-%{?with_zose_remote:%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf}
+%{?with_zos_remote:%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
@@ -261,10 +265,10 @@ fi
 %{_mandir}/man5/audisp-remote.conf.5*
 %{_mandir}/man5/auditd.conf.5*
 %{_mandir}/man5/ausearch-expression.5*
-%{?with_zose_remote:%{_mandir}/man5/zos-remote.conf.5*}
+%{?with_zos_remote:%{_mandir}/man5/zos-remote.conf.5*}
 %{_mandir}/man7/audit.rules.7*
 %{_mandir}/man8/audisp-remote.8*
-%{?with_zose_remote:%{_mandir}/man8/audispd-zos-remote.8*}
+%{?with_zos_remote:%{_mandir}/man8/audispd-zos-remote.8*}
 %{_mandir}/man8/audispd.8*
 %{_mandir}/man8/auditctl.8*
 %{_mandir}/man8/auditd.8*

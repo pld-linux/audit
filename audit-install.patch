@@ -1,13 +1,22 @@
---- audit-1.6.1/init.d/Makefile.am.orig	2007-08-27 22:04:49.000000000 +0200
-+++ audit-1.6.1/init.d/Makefile.am	2007-09-03 22:04:52.339937899 +0200
-@@ -34,8 +34,8 @@
+--- audit-2.2.2/init.d/Makefile.am.orig	2012-12-16 08:26:46.514737404 +0100
++++ audit-2.2.2/init.d/Makefile.am	2012-12-16 08:33:42.088062075 +0100
+@@ -37,8 +37,8 @@
+ dist_audit_DATA = auditd.conf audit.rules
  
  install-data-hook:
- 	$(INSTALL_DATA) -D -m 640 ${srcdir}/auditd.sysconfig ${DESTDIR}${sysconfigdir}/auditd
--	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}
 -	$(INSTALL_DATA) -D -m 640 ${srcdir}/${dispconfig} ${DESTDIR}${dispconfigdir}
-+	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}/${libconfig}
+-	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}
 +	$(INSTALL_DATA) -D -m 640 ${srcdir}/${dispconfig} ${DESTDIR}${dispconfigdir}/${dispconfig}
- 
++	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}/${libconfig}
+ if ENABLE_SYSTEMD
+ else
+ 	$(INSTALL_DATA) -D -m 640 ${srcdir}/auditd.sysconfig ${DESTDIR}${sysconfigdir}/auditd
+@@ -47,7 +47,7 @@
  install-exec-hook:
+ if ENABLE_SYSTEMD
+ 	mkdir -p ${DESTDIR}${initdir}
+-	$(INSTALL_SCRIPT) -D -m 640 ${srcdir}/auditd.service ${DESTDIR}${initdir}
++	$(INSTALL_SCRIPT) -D -m 640 ${srcdir}/auditd.service ${DESTDIR}${initdir}/auditd.service
+ else
  	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
+ endif
