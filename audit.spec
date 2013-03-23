@@ -10,12 +10,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.2.2
+Version:	2.2.3
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	6641fde111cf5dfda6d4282ab8410df5
+# Source0-md5:	4cdd3756f7b7122fc1a3e4627f01b446
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Source4:	%{name}d.service
@@ -24,6 +24,7 @@ Patch1:		%{name}-m4.patch
 Patch2:		%{name}-nolibs.patch
 Patch3:		%{name}-no_zos_remote.patch
 Patch4:		%{name}-systemd-notonly.patch
+Patch5:		%{name}-am.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -147,6 +148,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %patch2 -p1
 %{!?with_zos_remote:%patch3 -p1}
 %patch4 -p1
+%patch5 -p1
 
 %if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
