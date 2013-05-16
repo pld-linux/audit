@@ -1,4 +1,10 @@
-# TODO: revise our auditd.service vs upstream version
+# TODO: - revise our auditd.service vs upstream version
+# 	- add triggers for existing rules
+#	look at https://www.redhat.com/archives/linux-audit/2013-May/msg00000.html
+#	- files:
+#	warning: Installed (but unpackaged) file(s) found:
+#	/usr/lib/initscripts/legacy-actions/auditd/resume
+#	/usr/lib/initscripts/legacy-actions/auditd/rotate
 #
 # Conditional build:
 %bcond_without	kerberos5	# do not build with heimdal
@@ -10,12 +16,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.2.3
-Release:	1
+Version:	2.3
+Release:	0.1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	4cdd3756f7b7122fc1a3e4627f01b446
+# Source0-md5:	c26381c3b44e4b171ea625a90ee9be69
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Source4:	%{name}d.service
@@ -242,6 +248,7 @@ fi
 %attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
+%attr(750,root,root) %{_sbindir}/augenrules
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
@@ -258,7 +265,8 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit.rules
+%dir %{_sysconfdir}/audit/rules.d
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/rules.d/audit.rules
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %{systemdunitdir}/auditd.service
@@ -274,6 +282,7 @@ fi
 %{_mandir}/man8/audispd.8*
 %{_mandir}/man8/auditctl.8*
 %{_mandir}/man8/auditd.8*
+%{_mandir}/man8/augenrules.8*
 %{_mandir}/man8/aulast.8*
 %{_mandir}/man8/aulastlog.8*
 %{_mandir}/man8/aureport.8*
