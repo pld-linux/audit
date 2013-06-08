@@ -1,5 +1,5 @@
---- audit-2.3/init.d/Makefile.am.orig	2013-05-15 16:19:13.077630064 +0200
-+++ audit-2.3/init.d/Makefile.am	2013-05-16 13:40:32.110520842 +0200
+--- audit-2.3.1/init.d/Makefile.am.orig	2013-06-08 22:26:09.755754441 +0200
++++ audit-2.3.1/init.d/Makefile.am	2013-06-08 22:28:05.405752030 +0200
 @@ -28,12 +28,11 @@
  dispconfig = audispd.conf
  dispconfigdir = $(sysconfdir)/audisp
@@ -15,7 +15,7 @@
  
  auditdir = $(sysconfdir)/audit
  auditrdir = $(auditdir)/rules.d
-@@ -44,21 +43,17 @@
+@@ -44,22 +43,18 @@
  install-data-hook:
  	$(INSTALL_DATA) -D -m 640 ${srcdir}/${dispconfig} ${DESTDIR}${dispconfigdir}/${dispconfig}
  	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}/${libconfig}
@@ -32,6 +32,7 @@
 +	$(INSTALL_SCRIPT) -D -m 640 ${srcdir}/auditd.service ${DESTDIR}${systemdunitdir}/auditd.service
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.rotate ${DESTDIR}${legacydir}/rotate
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.resume ${DESTDIR}${legacydir}/resume
+ 	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.stop ${DESTDIR}${legacydir}/stop
 -else
 -	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
  endif
@@ -39,7 +40,7 @@
  	chmod 0750 $(DESTDIR)$(sbindir)/augenrules
  
  
-@@ -66,9 +61,8 @@
+@@ -67,9 +62,8 @@
  	rm ${DESTDIR}${dispconfigdir}/${dispconfig}
  	rm ${DESTDIR}${sysconfdir}/${libconfig}
  if ENABLE_SYSTEMD
