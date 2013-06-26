@@ -10,8 +10,6 @@
 # config: /etc/auditd.conf
 # pidfile: /var/run/auditd.pid
 
-PATH=/sbin:/bin:/usr/bin:/usr/sbin
-
 # Source function library
 . /etc/rc.d/init.d/functions
 
