@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# auditd        This starts and stops auditd
+# auditd	This starts and stops auditd
 #
 # chkconfig: 2345 18 87
 # description: This starts the Linux Auditing System Daemon
@@ -9,6 +9,8 @@
 # config: /etc/sysconfig/auditd
 # config: /etc/auditd.conf
 # pidfile: /var/run/auditd.pid
+
+PATH=/sbin:/bin:/usr/bin:/usr/sbin
 
 # Source function library
 . /etc/rc.d/init.d/functions
@@ -26,13 +28,19 @@ start() {
 		return
 	fi
 
+	local rc
 	msg_starting auditd
 	unset HOME MAIL USER USERNAME
 	daemon /sbin/auditd "$EXTRAOPTIONS"
 	RETVAL=$?
+	# Load the default rules if daemon started
+	if [ $RETVAL -eq 0 ] && [ -f $AUDIT_RULES ]; then
+		/sbin/auditctl -R $AUDIT_RULES >/dev/null
+		rc=$?
+		# add error code, if it was an error
+		[ $rc -ne 0 ] && RETVAL=$rc
+	fi
 	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/auditd
-	# Load the default rules
-	[ -f $AUDIT_RULES ] && /sbin/auditctl -R $AUDIT_RULES >/dev/null
 }
 
 stop() {
