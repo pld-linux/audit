@@ -2,7 +2,7 @@
 #
 # auditd	This starts and stops auditd
 #
-# chkconfig: 2345 18 87
+# chkconfig: 2345 18 82
 # description: This starts the Linux Auditing System Daemon
 #
 # processname: auditd
