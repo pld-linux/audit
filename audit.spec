@@ -1,10 +1,6 @@
 # TODO: - revise our auditd.service vs upstream version
 # 	- add triggers for existing rules
 #	look at https://www.redhat.com/archives/linux-audit/2013-May/msg00000.html
-#	- files:
-#	warning: Installed (but unpackaged) file(s) found:
-#	/usr/lib/initscripts/legacy-actions/auditd/resume
-#	/usr/lib/initscripts/legacy-actions/auditd/rotate
 #
 # Conditional build:
 %bcond_without	kerberos5	# do not build with heimdal
@@ -16,12 +12,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.3.1
+Version:	2.3.2
 Release:	0.1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	82c2c4b1052d7c1e948deafa0d5077fe
+# Source0-md5:	4e8d065b5cc16b77b9b61e93a9ed160e
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Source4:	%{name}d.service
@@ -206,6 +202,9 @@ install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 install %{SOURCE4} $RPM_BUILD_ROOT%{systemdunitdir}
+
+# seems RH initscripts-specific
+%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/initscripts
 
 %if %{with python}
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
