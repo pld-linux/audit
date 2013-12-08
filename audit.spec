@@ -229,6 +229,8 @@ fi
 if [ -e %{_sysconfdir}/audit/audit.rules.rpmsave ] ; then
 	%{__mv} %{_sysconfdir}/audit/audit.rules{.rpmsave,}
 fi
+%service auditd restart "audit daemon"
+%systemd_post auditd.service
 
 %files
 %defattr(644,root,root,755)
