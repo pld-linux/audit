@@ -1,0 +1,10 @@
+--- a/init.d/auditd.service
++++ b/init.d/auditd.service
+@@ -4,7 +4,6 @@ DefaultDependencies=no
+ After=local-fs.target
+ Conflicts=shutdown.target
+ Before=sysinit.target shutdown.target
+-RefuseManualStop=yes
+ 
+ [Service]
+ ExecStart=/sbin/auditd -n

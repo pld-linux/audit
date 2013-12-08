@@ -1,0 +1,12 @@
+--- audit-2.3.2/init.d/auditd.cron.orig	2013-07-29 23:36:59.000000000 +0200
++++ audit-2.3.2/init.d/auditd.cron	2013-12-08 12:29:45.000000000 +0100
+@@ -1,7 +1,8 @@
+ # based on a cron job.
+ ##########
+ 
+-/sbin/service auditd rotate
++p=$(pidof auditd)
++[ -n "$p" ] && kill -USR1 $p
+ EXITVALUE=$?
+ if [ $EXITVALUE != 0 ]; then
+     /usr/bin/logger -t auditd "ALERT exited abnormally with [$EXITVALUE]"

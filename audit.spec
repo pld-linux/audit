@@ -1,10 +1,5 @@
-# TODO: - revise our auditd.service vs upstream version
-# 	- add triggers for existing rules
-#	look at https://www.redhat.com/archives/linux-audit/2013-May/msg00000.html
-#
 # Conditional build:
 %bcond_without	kerberos5	# do not build with heimdal
-%bcond_without	pie		# auditd as PIE binary
 %bcond_without	prelude		# prelude audisp plugin
 %bcond_without	python		# don't build python bindings
 %bcond_without	zos_remote	# do not build zos-remote audisp plugin (LDAP dep)
@@ -13,24 +8,24 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.3.2
-Release:	0.1
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 # Source0-md5:	4e8d065b5cc16b77b9b61e93a9ed160e
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
-Source4:	%{name}d.service
 Patch0:		%{name}-install.patch
 Patch1:		%{name}-m4.patch
 Patch2:		%{name}-nolibs.patch
 Patch3:		%{name}-no_zos_remote.patch
 Patch4:		%{name}-systemd-notonly.patch
 Patch5:		%{name}-am.patch
+Patch6:		%{name}-no-refusemanualstop.patch
+Patch7:		%{name}-cronjob.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
-%{?with_pie:BuildRequires:	gcc >= 5:3.4}
 BuildRequires:	glibc-headers >= 6:2.3.6
 %{?with_kerberos5:BuildRequires:	heimdal-devel}
 BuildRequires:	libcap-ng-devel
@@ -151,6 +146,8 @@ Pythonowy interfejs do biblioteki libaudit.
 %{!?with_zos_remote:%patch3 -p1}
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 %if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
@@ -169,12 +166,8 @@ sed 's/swig//' -i Makefile.am
 	--with-apparmor \
 	--with-libwrap \
 	%{?with_prelude:--with-prelude}
-# override auditd_{C,LD}FLAGS to avoid -fPIE unsupported by gcc 3.3
-%{__make} \
-	%{!?with_pie:auditd_CFLAGS="-D_REENTRANT -D_GNU_SOURCE" auditd_LDFLAGS="-Wl,-z,relro"}
 
-# temporarily not included in all
-%{__make} -C auparse
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -183,9 +176,8 @@ install -d $RPM_BUILD_ROOT%{_var}/log/audit
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-# temporarily not included in all
-%{__make} -C auparse install \
-	DESTDIR=$RPM_BUILD_ROOT
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
+install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
 install -d $RPM_BUILD_ROOT/%{_lib}
 mv -f $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
@@ -195,21 +187,13 @@ mv -f $RPM_BUILD_ROOT%{_libdir}/libauparse.so.* $RPM_BUILD_ROOT/%{_lib}
 ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libauparse.so
 
-# We manually install this since Makefile doesn't
-install -d $RPM_BUILD_ROOT{%{_includedir},%{systemdunitdir}}
-install lib/libaudit.h $RPM_BUILD_ROOT%{_includedir}
-
-install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
-install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
-install %{SOURCE4} $RPM_BUILD_ROOT%{systemdunitdir}
-
-# seems RH initscripts-specific
-%{__rm} -r $RPM_BUILD_ROOT%{_libdir}/initscripts
+# RH initscripts-specific
+%{__rm} -r $RPM_BUILD_ROOT%{_libexecdir}/initscripts
 
 %if %{with python}
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
-%{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.py
+%py_postclean
 %{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 %endif
 
@@ -220,6 +204,10 @@ rm -rf $RPM_BUILD_ROOT
 %postun	libs -p /sbin/ldconfig
 
 %post
+# Copy default rules into place on new installation
+if [ ! -e %{_sysconfdir}/audit/audit.rules ] ; then
+	cp -a %{_sysconfdir}/audit/rules.d/audit.rules %{_sysconfdir}/audit/audit.rules
+fi
 /sbin/chkconfig --add auditd
 %service auditd restart "audit daemon"
 %systemd_post auditd.service
@@ -237,9 +225,15 @@ fi
 %triggerpostun -- %{name} < 2.2-2
 %systemd_trigger auditd.service
 
+%triggerpostun -- %{name} < 2.3-1
+if [ -e %{_sysconfdir}/audit/audit.rules.rpmsave ] ; then
+	%{__mv} %{_sysconfdir}/audit/audit.rules{.rpmsave,}
+fi
+
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog README THANKS TODO
+%doc contrib/{capp,nispom,lspp,stig}.rules init.d/auditd.cron
 %attr(750,root,root) %{_bindir}/aulast
 %attr(750,root,root) %{_bindir}/aulastlog
 %attr(750,root,root) %{_bindir}/ausyscall

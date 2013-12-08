@@ -15,7 +15,8 @@ PATH=/sbin:/bin:/usr/bin:/usr/sbin
 # Source function library
 . /etc/rc.d/init.d/functions
 
-AUDITD_CLEAN_STOP=yes
+AUDITD_CLEAN_STOP="yes"
+AUDITD_STOP_DISABLE="yes"
 EXTRAOPTIONS=
 AUDIT_RULES=/etc/audit/audit.rules
 
@@ -30,11 +31,29 @@ start() {
 
 	local rc
 	msg_starting auditd
+	# Localization for auditd is controlled in /etc/synconfig/auditd
+	if [ -z "$AUDITD_LANG" -o "$AUDITD_LANG" = "C" -o "$AUDITD_LANG" = "none" -o "$AUDITD_LANG" = "NONE" ]; then
+		unset LANG LC_TIME LC_ALL LC_MESSAGES LC_NUMERIC LC_MONETARY LC_COLLATE
+	else
+		LANG="$AUDITD_LANG"
+		LC_TIME="$AUDITD_LANG"
+		LC_ALL="$AUDITD_LANG"
+		LC_MESSAGES="$AUDITD_LANG"
+		LC_NUMERIC="$AUDITD_LANG"
+		LC_MONETARY="$AUDITD_LANG"
+		LC_COLLATE="$AUDITD_LANG"
+		export LANG LC_TIME LC_ALL LC_MESSAGES LC_NUMERIC LC_MONETARY LC_COLLATE
+	fi
 	unset HOME MAIL USER USERNAME
 	daemon /sbin/auditd "$EXTRAOPTIONS"
 	RETVAL=$?
 	# Load the default rules if daemon started
 	if [ $RETVAL -eq 0 ] && [ -f $AUDIT_RULES ]; then
+		# Prepare the default rules
+		if is_yes "$USE_AUGENRULES"; then
+			/sbin/augenrules
+		fi
+		# Load the default rules
 		/sbin/auditctl -R $AUDIT_RULES >/dev/null
 		rc=$?
 		# add error code, if it was an error
@@ -55,6 +74,9 @@ stop() {
 	# Remove watches so shutdown works cleanly
 	if ! is_no "$AUDITD_CLEAN_STOP"; then
 		/sbin/auditctl -D >/dev/null
+	fi
+	if ! is_no "$AUDITD_STOP_DISABLE"; then
+		/sbin/auditctl -e 0 >/dev/null
 	fi
 }
 
