@@ -1,3 +1,4 @@
+#
 # Conditional build:
 %bcond_without	kerberos5	# do not build with heimdal
 %bcond_without	prelude		# prelude audisp plugin
@@ -7,12 +8,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.3.4
+Version:	2.3.5
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	ababfa3a192d6acba8806c9dcb16a6c8
+# Source0-md5:	755ac2dbe766cc74aa6c7bd54be61b9f
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
