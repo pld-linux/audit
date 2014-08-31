@@ -1,19 +1,20 @@
 #
 # Conditional build:
-%bcond_without	kerberos5	# do not build with heimdal
+%bcond_without	kerberos5	# Kerberos V support via heimdal
 %bcond_without	prelude		# prelude audisp plugin
-%bcond_without	python		# don't build python bindings
-%bcond_without	zos_remote	# do not build zos-remote audisp plugin (LDAP dep)
+%bcond_without	golang		# Go language bindings
+%bcond_without	python		# Python bindings
+%bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 #
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.3.7
+Version:	2.4
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	42813b6c202f5922ac904c059ac17ee6
+# Source0-md5:	7d35d9db17c2c5e155bc1fe42b55ec48
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -28,6 +29,7 @@ URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
 BuildRequires:	glibc-headers >= 6:2.3.6
+%{?with_golang:BuildRequires:	golang}
 %{?with_kerberos5:BuildRequires:	heimdal-devel}
 BuildRequires:	libcap-ng-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
@@ -125,6 +127,20 @@ Intrusion Detection events.
 audisp-prelude to wtyczka demona audispd przekazującego zdarzenia
 audytowe wykorzystująca libprelude do wysyłania alarmów IDMEF o
 prawdopodobnych zdarzeniach IDS.
+
+%package -n golang-audit
+Summary:	Go language interface to libaudit library
+Summary(pl.UTF-8):	Interfejs języka Go do biblioteki libaudit
+License:	LGPL v2.1+
+Group:		Development/Languages
+Requires:	%{name}-libs = %{version}-%{release}
+Requires:	golang
+
+%description -n golang-audit
+Go language interface to libaudit library.
+
+%description -n golang-audit -l pl.UTF-8
+Interfejs języka Go do biblioteki libaudit.
 
 %package -n python-audit
 Summary:	Python interface to libaudit library
@@ -304,6 +320,7 @@ fi
 %{_libdir}/libauparse.la
 %{_includedir}/auparse*.h
 %{_includedir}/libaudit.h
+%{_pkgconfigdir}/audit.pc
 %{_mandir}/man3/audit_*.3*
 %{_mandir}/man3/auparse_*.3*
 %{_mandir}/man3/ausearch_*.3*
@@ -323,6 +340,13 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/au-prelude.conf
 %{_mandir}/man5/audisp-prelude.conf.5*
 %{_mandir}/man8/audisp-prelude.8*
+%endif
+
+%if %{with golang}
+%files -n golang-audit
+%defattr(644,root,root,755)
+%dir %{_libdir}/golang/src/pkg/redhat.com
+%{_libdir}/golang/src/pkg/redhat.com/audit
 %endif
 
 %if %{with python}

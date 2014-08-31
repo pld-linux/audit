@@ -1,10 +1,10 @@
---- a/init.d/auditd.service
-+++ b/init.d/auditd.service
-@@ -4,7 +4,6 @@ DefaultDependencies=no
- After=local-fs.target
+--- audit-2.4/init.d/auditd.service.orig	2014-08-31 14:15:27.383690633 +0200
++++ audit-2.4/init.d/auditd.service	2014-08-31 14:16:15.263688624 +0200
+@@ -4,7 +4,6 @@
+ After=local-fs.target systemd-tmpfiles-setup.service
  Conflicts=shutdown.target
  Before=sysinit.target shutdown.target
 -RefuseManualStop=yes
+ ConditionKernelCommandLine=!audit=0
  
  [Service]
- ExecStart=/sbin/auditd -n

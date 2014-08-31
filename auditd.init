@@ -3,11 +3,14 @@
 # auditd	This starts and stops auditd
 #
 # chkconfig: 2345 18 82
-# description: This starts the Linux Auditing System Daemon
+# description: This starts the Linux Auditing System Daemon, \
+#              which collects security related events in a dedicated \
+#              audit log. If this daemon is turned off, audit events \
+#              will be sent to syslog.
 #
 # processname: auditd
 # config: /etc/sysconfig/auditd
-# config: /etc/auditd.conf
+# config: /etc/audit/auditd.conf
 # pidfile: /var/run/auditd.pid
 
 PATH=/sbin:/bin:/usr/bin:/usr/sbin
