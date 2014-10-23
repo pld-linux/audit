@@ -1,0 +1,23 @@
+--- audit-2.4/bindings/golang/Makefile.am~	2014-08-24 18:39:23.000000000 +0200
++++ audit-2.4/bindings/golang/Makefile.am	2014-10-23 07:36:39.764147566 +0200
+@@ -23,16 +23,15 @@
+ CONFIG_CLEAN_FILES = *.loT *.rej *.orig
+ EXTRA_DIST = audit.go
+ 
+-LIBDIR = lib
+-GODIR = $(LIBDIR)/golang/src/pkg/redhat.com/audit
++GODIR = ${libdir}/golang/src/pkg/redhat.com/audit
+ dist_check_SCRIPTS = test.go
+ 
+ install:
+-	[ -d $(DESTDIR)${prefix}/$(GODIR) ] || mkdir -p $(DESTDIR)${prefix}/$(GODIR)
+-	install -m 644 ${top_srcdir}/bindings/golang/audit.go $(DESTDIR)${prefix}/$(GODIR)
++	[ -d $(DESTDIR)/$(GODIR) ] || mkdir -p $(DESTDIR)/$(GODIR)
++	install -m 644 ${top_srcdir}/bindings/golang/audit.go $(DESTDIR)/$(GODIR)
+ 
+ uninstall:
+-	@rm -f $(DESTDIR)${prefix}/$(GODIR)/*
++	@rm -f $(DESTDIR)/$(GODIR)/*
+ 
+ check:
+ 	@mkdir audit
