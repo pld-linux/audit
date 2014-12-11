@@ -10,7 +10,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.4.1
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -26,6 +26,8 @@ Patch5:		%{name}-am.patch
 Patch6:		%{name}-no-refusemanualstop.patch
 Patch7:		%{name}-cronjob.patch
 Patch8:		golang-paths.patch
+# https://fedorahosted.org/fesco/ticket/1311
+Patch9:		never-audit.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -167,6 +169,7 @@ Pythonowy interfejs do biblioteki libaudit.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
