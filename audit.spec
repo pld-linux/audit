@@ -5,7 +5,11 @@
 %bcond_without	golang		# Go language bindings
 %bcond_without	python		# Python bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
-#
+
+%ifnarch %{ix86} %{x8664} %{arm}
+%undefine	with_golang
+%endif
+
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
