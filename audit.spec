@@ -3,14 +3,17 @@
 %bcond_without	kerberos5	# Kerberos V support via heimdal
 %bcond_without	prelude		# prelude audisp plugin
 %bcond_without	golang		# Go language bindings
-%bcond_without	python		# Python bindings
-%bcond_without	python3		# Python3 bindings
+%bcond_without	python		# Python bindings (any)
+%bcond_without	python3		# Python 3 bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 
 %ifnarch %{ix86} %{x8664} %{arm}
 %undefine	with_golang
 %endif
 
+%if %{without python}
+%undefine	with_python3
+%endif
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
@@ -37,7 +40,7 @@ URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
 BuildRequires:	glibc-headers >= 6:2.3.6
-%{?with_golang:BuildRequires:	golang}
+%{?with_golang:BuildRequires:	golang >= 1.4}
 %{?with_kerberos5:BuildRequires:	heimdal-devel}
 BuildRequires:	libcap-ng-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
@@ -147,7 +150,7 @@ Summary(pl.UTF-8):	Interfejs języka Go do biblioteki libaudit
 License:	LGPL v2.1+
 Group:		Development/Languages
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	golang
+Requires:	golang >= 1.4
 
 %description -n golang-audit
 Go language interface to libaudit library.
@@ -156,30 +159,30 @@ Go language interface to libaudit library.
 Interfejs języka Go do biblioteki libaudit.
 
 %package -n python-audit
-Summary:	Python interface to libaudit library
-Summary(pl.UTF-8):	Pythonowy interfejs do biblioteki libaudit
+Summary:	Python 2.x interface to libaudit library
+Summary(pl.UTF-8):	Interfejs Pythona 2.x do biblioteki libaudit
 License:	LGPL v2.1+
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
 
 %description -n python-audit
-Python interface to libaudit library.
+Python 2.x interface to libaudit library.
 
 %description -n python-audit -l pl.UTF-8
-Pythonowy interfejs do biblioteki libaudit.
+Interfejs Pythona 2.x do biblioteki libaudit.
 
 %package -n python3-audit
-Summary:	Python interface to libaudit library
-Summary(pl.UTF-8):	Pythonowy interfejs do biblioteki libaudit
+Summary:	Python 3.x interface to libaudit library
+Summary(pl.UTF-8):	Interfejs Pythona 3.x do biblioteki libaudit
 License:	LGPL v2.1+
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
 
 %description -n python3-audit
-Python interface to libaudit library.
+Python 3.x interface to libaudit library.
 
 %description -n python3-audit -l pl.UTF-8
-Pythonowy interfejs do biblioteki libaudit.
+Interfejs Pythona 3.x do biblioteki libaudit.
 
 %prep
 %setup -q
@@ -242,7 +245,7 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 %{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
 %endif
 
-%if %{with python}
+%if %{with python3}
 %{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/*.{la,a}
 %endif
 
