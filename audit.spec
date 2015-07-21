@@ -4,6 +4,7 @@
 %bcond_without	prelude		# prelude audisp plugin
 %bcond_without	golang		# Go language bindings
 %bcond_without	python		# Python bindings
+%bcond_without	python3		# Python3 bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 
 %ifnarch %{ix86} %{x8664} %{arm}
@@ -13,12 +14,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.4.2
+Version:	2.4.3
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	52e535e449f6fb80a4491267e35f1cec
+# Source0-md5:	544d863af2016b76afd8d1691b251164
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -46,6 +47,11 @@ BuildRequires:	linux-libc-headers >= 7:2.6.30
 %{?with_zos_remote:BuildRequires:	openldap-devel}
 %if %{with python}
 BuildRequires:	python-devel >= 1:2.5
+BuildRequires:	rpm-pythonprov
+BuildRequires:	swig-python
+%endif
+%if %{with python3}
+BuildRequires:	python3-devel
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
 %endif
@@ -162,6 +168,19 @@ Python interface to libaudit library.
 %description -n python-audit -l pl.UTF-8
 Pythonowy interfejs do biblioteki libaudit.
 
+%package -n python3-audit
+Summary:	Python interface to libaudit library
+Summary(pl.UTF-8):	Pythonowy interfejs do biblioteki libaudit
+License:	LGPL v2.1+
+Group:		Libraries/Python
+Requires:	%{name}-libs = %{version}-%{release}
+
+%description -n python3-audit
+Python interface to libaudit library.
+
+%description -n python3-audit -l pl.UTF-8
+Pythonowy interfejs do biblioteki libaudit.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -221,6 +240,10 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 %py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
 %py_postclean
 %{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
+%endif
+
+%if %{with python}
+%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/*.{la,a}
 %endif
 
 %clean
@@ -330,6 +353,7 @@ fi
 %{_includedir}/auparse*.h
 %{_includedir}/libaudit.h
 %{_pkgconfigdir}/audit.pc
+%{_pkgconfigdir}/auparse.pc
 %{_mandir}/man3/audit_*.3*
 %{_mandir}/man3/auparse_*.3*
 %{_mandir}/man3/ausearch_*.3*
@@ -354,8 +378,8 @@ fi
 %if %{with golang}
 %files -n golang-audit
 %defattr(644,root,root,755)
-%dir %{_libdir}/golang/src/pkg/redhat.com
-%{_libdir}/golang/src/pkg/redhat.com/audit
+%dir %{_libdir}/golang/src/redhat.com
+%{_libdir}/golang/src/redhat.com/audit
 %endif
 
 %if %{with python}
@@ -364,4 +388,12 @@ fi
 %attr(755,root,root) %{py_sitedir}/_audit.so
 %attr(755,root,root) %{py_sitedir}/auparse.so
 %{py_sitedir}/audit.py[co]
+%endif
+
+%if %{with python3}
+%files -n python3-audit
+%defattr(644,root,root,755)
+%attr(755,root,root) %{py3_sitedir}/_audit.so
+%attr(755,root,root) %{py3_sitedir}/auparse.so
+%{py3_sitedir}/audit.py
 %endif

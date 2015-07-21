@@ -6,7 +6,7 @@
  
 -LIBDIR = lib
 -GODIR = $(LIBDIR)/golang/src/pkg/redhat.com/audit
-+GODIR = ${libdir}/golang/src/pkg/redhat.com/audit
++GODIR = ${libdir}/golang/src/redhat.com/audit
  dist_check_SCRIPTS = test.go
  
  install:
