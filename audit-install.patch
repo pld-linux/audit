@@ -1,6 +1,6 @@
---- audit-2.3/init.d/Makefile.am.orig	2013-04-30 16:26:09.000000000 +0200
-+++ audit-2.3/init.d/Makefile.am	2013-05-15 15:34:15.728741312 +0200
-@@ -42,8 +42,8 @@
+--- audit-2.5.2/init.d/Makefile.am.orig	2016-04-29 18:31:43.000000000 +0200
++++ audit-2.5.2/init.d/Makefile.am	2016-05-10 19:55:50.830718697 +0200
+@@ -41,8 +41,8 @@
  sbin_SCRIPTS = augenrules
  
  install-data-hook:
@@ -11,12 +11,12 @@
  if ENABLE_SYSTEMD
  else
  	$(INSTALL_DATA) -D -m 640 ${srcdir}/auditd.sysconfig ${DESTDIR}${sysconfigdir}/auditd
-@@ -53,7 +53,7 @@
+@@ -52,7 +52,7 @@
  if ENABLE_SYSTEMD
  	mkdir -p ${DESTDIR}${initdir}
  	mkdir -p ${DESTDIR}${legacydir}
--	$(INSTALL_SCRIPT) -D -m 640 ${srcdir}/auditd.service ${DESTDIR}${initdir}
-+	$(INSTALL_SCRIPT) -D -m 640 ${srcdir}/auditd.service ${DESTDIR}${initdir}/auditd.service
+-	$(INSTALL_SCRIPT) -D -m 644 ${srcdir}/auditd.service ${DESTDIR}${initdir}
++	$(INSTALL_SCRIPT) -D -m 644 ${srcdir}/auditd.service ${DESTDIR}${initdir}/auditd.service
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.rotate ${DESTDIR}${legacydir}/rotate
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.resume ${DESTDIR}${legacydir}/resume
- else
+ 	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.stop ${DESTDIR}${legacydir}/stop

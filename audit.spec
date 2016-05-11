@@ -17,12 +17,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.4.4
-Release:	5
+Version:	2.5.2
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	72b0fd94d32846142bc472f0d91e62b4
+# Source0-md5:	bfc332d35b27121f105dd34ce35b6f0a
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -34,8 +34,6 @@ Patch5:		%{name}-am.patch
 Patch6:		%{name}-no-refusemanualstop.patch
 Patch7:		%{name}-cronjob.patch
 Patch8:		golang-paths.patch
-# https://fedorahosted.org/fesco/ticket/1311
-Patch9:		never-audit.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.9
@@ -195,7 +193,6 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p1
 
 %if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
@@ -219,10 +216,13 @@ sed 's/swig//' -i Makefile.am
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_var}/log/audit
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/audit/rules.d,%{_var}/log/audit}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+# default to no audit (and no overhead)
+cp -p rules/10-no-audit.rules $RPM_BUILD_ROOT%{_sysconfdir}/audit/rules.d
 
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
@@ -258,7 +258,7 @@ rm -rf $RPM_BUILD_ROOT
 %post
 # Copy default rules into place on new installation
 if [ ! -e %{_sysconfdir}/audit/audit.rules ] ; then
-	cp -a %{_sysconfdir}/audit/rules.d/audit.rules %{_sysconfdir}/audit/audit.rules
+	cp -a %{_sysconfdir}/audit/rules.d/10-no-audit.rules %{_sysconfdir}/audit/audit.rules
 fi
 /sbin/chkconfig --add auditd
 %service auditd restart "audit daemon"
@@ -284,10 +284,18 @@ fi
 %service auditd restart "audit daemon"
 %systemd_post auditd.service
 
+%triggerpostun -- %{name} < 2.5-1
+if [ -f %{_sysconfdir}/audit/rules.d/audit.rules.rpmsave ]; then
+%banner %{name} -e <<EOF
+Since audit 2.5 %{_sysconfdir}/audit/rules.d/audit.rules file (now saved
+as audit.rules.rpmnew) is replaced by a set of numbered rule files - remember
+to update your configuration!
+EOF
+fi
+
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README THANKS TODO
-%doc contrib/{capp,nispom,lspp,stig}.rules init.d/auditd.cron
+%doc AUTHORS ChangeLog README THANKS TODO rules/{README-rules,*.rules} init.d/auditd.cron
 %attr(750,root,root) %{_bindir}/aulast
 %attr(750,root,root) %{_bindir}/aulastlog
 %attr(750,root,root) %{_bindir}/ausyscall
@@ -313,7 +321,7 @@ fi
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
 %dir %{_sysconfdir}/audit/rules.d
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/rules.d/audit.rules
+%attr(640,root,root) %config(noreplace,missingok) %verify(not md5 mtime size) %{_sysconfdir}/audit/rules.d/10-no-audit.rules
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %{systemdunitdir}/auditd.service
@@ -357,6 +365,7 @@ fi
 %{_includedir}/libaudit.h
 %{_pkgconfigdir}/audit.pc
 %{_pkgconfigdir}/auparse.pc
+%{_aclocaldir}/audit.m4
 %{_mandir}/man3/audit_*.3*
 %{_mandir}/man3/auparse_*.3*
 %{_mandir}/man3/ausearch_*.3*
