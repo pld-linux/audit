@@ -17,12 +17,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.5.2
+Version:	2.6.6
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	bfc332d35b27121f105dd34ce35b6f0a
+# Source0-md5:	871fbc03039a5101b5191c5dcc6e8ac2
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -102,6 +102,7 @@ License:	LGPL v2.1+
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	linux-libc-headers >= 7:2.6.30
+Requires:	libcap-ng-devel
 
 %description libs-devel
 The audit-libs-devel package contains the header files needed for
@@ -319,6 +320,7 @@ fi
 %{?with_zos_remote:%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit-stop.rules
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
 %dir %{_sysconfdir}/audit/rules.d
 %attr(640,root,root) %config(noreplace,missingok) %verify(not md5 mtime size) %{_sysconfdir}/audit/rules.d/10-no-audit.rules
