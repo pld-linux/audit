@@ -17,12 +17,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.6.7
-Release:	2
+Version:	2.7.4
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	274ebe4bc5fbee837cd783d5ff597e78
+# Source0-md5:	001fa3779d66c77c9c3240cd48fcbe0b
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -36,7 +36,7 @@ Patch7:		%{name}-cronjob.patch
 Patch8:		golang-paths.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
-BuildRequires:	automake >= 1:1.9
+BuildRequires:	automake >= 1:1.12.6
 BuildRequires:	glibc-headers >= 6:2.3.6
 %{?with_golang:BuildRequires:	golang >= 1.4}
 %{?with_kerberos5:BuildRequires:	heimdal-devel}
@@ -410,4 +410,5 @@ fi
 %attr(755,root,root) %{py3_sitedir}/_audit.so
 %attr(755,root,root) %{py3_sitedir}/auparse.so
 %{py3_sitedir}/audit.py
+%{py3_sitedir}/__pycache__/audit.cpython-*.py[co]
 %endif
