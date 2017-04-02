@@ -3,12 +3,13 @@
 %bcond_without	kerberos5	# Kerberos V support via heimdal
 %bcond_without	prelude		# prelude audisp plugin
 %bcond_without	golang		# Go language bindings
+%bcond_with	gccgo		# use GCC go frontend instead of golang implementation
 %bcond_without	python		# Python bindings (any)
 %bcond_without	python3		# Python 3 bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 
-%ifnarch %{ix86} %{x8664} %{arm}
-%undefine	with_golang
+%ifnarch %{ix86} %{x8664} %{arm} aarch64 mips64 mips64le ppc64 ppc64le s390x
+%define		with_gccgo	1
 %endif
 
 %if %{without python}
@@ -38,7 +39,6 @@ URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
 BuildRequires:	glibc-headers >= 6:2.3.6
-%{?with_golang:BuildRequires:	golang >= 1.4}
 %{?with_kerberos5:BuildRequires:	heimdal-devel}
 BuildRequires:	libcap-ng-devel
 %{?with_prelude:BuildRequires:	libprelude-devel}
@@ -58,6 +58,10 @@ BuildRequires:	swig-python
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.623
 BuildRequires:	sed >= 4.0
+%if %{with golang}
+%{?with_gccgo:BuildRequires:	gcc-go >= 5.1}
+%{!?with_gccgo:BuildRequires:	golang >= 1.4}
+%endif
 Requires(post,preun):	/sbin/chkconfig
 Requires(post,preun,postun):	systemd-units >= 38
 Requires:	%{name}-libs = %{version}-%{release}
@@ -149,7 +153,11 @@ Summary(pl.UTF-8):	Interfejs języka Go do biblioteki libaudit
 License:	LGPL v2.1+
 Group:		Development/Languages
 Requires:	%{name}-libs = %{version}-%{release}
+%if %{with gccgo}
+Requires:	gcc-go >= 5.1
+%else
 Requires:	golang >= 1.4
+%endif
 
 %description -n golang-audit
 Go language interface to libaudit library.
