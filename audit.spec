@@ -18,12 +18,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.8.3
-Release:	2
+Version:	2.8.4
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	13cf0e09589e97324132bed3993e093a
+# Source0-md5:	ec9510312564c3d9483bccf8dbda4779
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -304,7 +304,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README THANKS TODO rules/{README-rules,*.rules} init.d/auditd.cron
+%doc AUTHORS ChangeLog README THANKS rules/{README-rules,*.rules} init.d/auditd.cron
 %attr(750,root,root) %{_bindir}/aulast
 %attr(750,root,root) %{_bindir}/aulastlog
 %attr(750,root,root) %{_bindir}/ausyscall

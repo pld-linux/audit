@@ -1,5 +1,5 @@
---- audit-2.8.3/init.d/Makefile.am.orig	2018-04-01 23:13:11.592526554 +0200
-+++ audit-2.8.3/init.d/Makefile.am	2018-04-01 23:14:57.905858672 +0200
+--- audit-2.8.4/init.d/Makefile.am.orig	2018-08-29 16:26:20.634007070 +0200
++++ audit-2.8.4/init.d/Makefile.am	2018-08-29 17:08:25.793978367 +0200
 @@ -30,12 +30,11 @@
  dispconfig = audispd.conf
  dispconfigdir = $(sysconfdir)/audisp
@@ -15,7 +15,7 @@
  
  auditdir = $(sysconfdir)/audit
  auditrdir = $(auditdir)/rules.d
-@@ -45,25 +44,21 @@
+@@ -45,16 +44,13 @@
  install-data-hook:
  	$(INSTALL_DATA) -D -m 640 ${srcdir}/${dispconfig} ${DESTDIR}${dispconfigdir}/${dispconfig}
  	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}/${libconfig}
@@ -34,6 +34,7 @@
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.rotate ${DESTDIR}${legacydir}/rotate
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.resume ${DESTDIR}${legacydir}/resume
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.reload ${DESTDIR}${legacydir}/reload
+@@ -62,9 +58,8 @@
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.stop ${DESTDIR}${legacydir}/stop
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.restart ${DESTDIR}${legacydir}/restart
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.condrestart ${DESTDIR}${legacydir}/condrestart
@@ -44,7 +45,7 @@
  	chmod 0750 $(DESTDIR)$(sbindir)/augenrules
  
  
-@@ -71,15 +66,14 @@
+@@ -72,7 +67,7 @@
  	rm ${DESTDIR}${dispconfigdir}/${dispconfig}
  	rm ${DESTDIR}${sysconfdir}/${libconfig}
  if ENABLE_SYSTEMD
@@ -53,6 +54,7 @@
  	rm ${DESTDIR}${legacydir}/rotate
  	rm ${DESTDIR}${legacydir}/resume
  	rm ${DESTDIR}${legacydir}/reload
+@@ -80,8 +75,7 @@
  	rm ${DESTDIR}${legacydir}/stop
  	rm ${DESTDIR}${legacydir}/restart
  	rm ${DESTDIR}${legacydir}/condrestart
