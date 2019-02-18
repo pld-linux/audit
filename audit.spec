@@ -29,12 +29,11 @@ Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
 Patch1:		%{name}-m4.patch
 Patch2:		%{name}-nolibs.patch
-Patch3:		%{name}-no_zos_remote.patch
-Patch4:		%{name}-systemd-notonly.patch
-Patch5:		%{name}-am.patch
-Patch6:		%{name}-no-refusemanualstop.patch
-Patch7:		%{name}-cronjob.patch
-Patch8:		golang-paths.patch
+Patch3:		%{name}-systemd-notonly.patch
+Patch4:		%{name}-am.patch
+Patch5:		%{name}-no-refusemanualstop.patch
+Patch6:		%{name}-cronjob.patch
+Patch7:		golang-paths.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
@@ -196,12 +195,11 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%{!?with_zos_remote:%patch3 -p1}
+%patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
 
 %if %{without python}
 sed 's#swig/Makefile ##' -i configure.ac
@@ -219,7 +217,8 @@ sed 's/swig//' -i Makefile.am
 	--enable-systemd \
 	--with-apparmor \
 	--with-libwrap \
-	%{?with_prelude:--with-prelude}
+	%{?with_prelude:--with-prelude} \
+	%{!?with_zos_remote:--disable-zos-remote}
 
 %{__make}
 
