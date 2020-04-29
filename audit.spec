@@ -202,8 +202,8 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch7 -p1
 
 %if %{without python}
-sed 's#swig/Makefile ##' -i configure.ac
-sed 's/swig//' -i Makefile.am
+sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
+sed 's/swig//' -i bindings/Makefile.am
 %endif
 
 %build
