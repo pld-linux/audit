@@ -34,6 +34,7 @@ Patch4:		%{name}-am.patch
 Patch5:		%{name}-no-refusemanualstop.patch
 Patch6:		%{name}-cronjob.patch
 Patch7:		golang-paths.patch
+Patch8:		gcc10.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
@@ -200,6 +201,7 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
