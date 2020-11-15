@@ -213,6 +213,10 @@ sed 's/swig//' -i bindings/Makefile.am
 %{__autoheader}
 %{__automake}
 %configure \
+	CC_FOR_BUILD="%{__cc}" \
+	CPPFLAGS_FOR_BUILD="%{rpmcppflags}" \
+	CFLAGS_FOR_BUILD="%{rpmcflags}" \
+	LDFLAGS_FOR_BUILD="%{rpmldflags}" \
 	%{?with_kerberos5:--enable-gssapi-krb5} \
 	--enable-systemd \
 	--with-apparmor \
