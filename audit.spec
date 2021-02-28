@@ -19,7 +19,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.8.5
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
