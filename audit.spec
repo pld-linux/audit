@@ -56,7 +56,7 @@ BuildRequires:	python3-devel
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.623
+BuildRequires:	rpmbuild(macros) >= 1.644
 BuildRequires:	sed >= 4.0
 %if %{with golang}
 %{?with_gccgo:BuildRequires:	gcc-go >= 5.1}
