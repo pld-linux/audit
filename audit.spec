@@ -22,7 +22,7 @@ Version:	2.8.5
 Release:	1
 License:	GPL v2+
 Group:		Daemons
-Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
+Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 # Source0-md5:	9455e5773670afdbccaeb92681b2e97d
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
