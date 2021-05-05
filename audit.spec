@@ -5,6 +5,7 @@
 %bcond_without	golang		# Go language bindings
 %bcond_with	gccgo		# use GCC go frontend instead of golang implementation
 %bcond_without	python		# Python bindings (any)
+%bcond_without	python2		# Python 2 bindings
 %bcond_without	python3		# Python 3 bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 
@@ -13,6 +14,7 @@
 %endif
 
 %if %{without python}
+%undefine	with_python2
 %undefine	with_python3
 %endif
 Summary:	User space tools for 2.6 kernel auditing
@@ -46,7 +48,7 @@ BuildRequires:	libtool
 BuildRequires:	libwrap-devel
 BuildRequires:	linux-libc-headers >= 7:2.6.30
 %{?with_zos_remote:BuildRequires:	openldap-devel}
-%if %{with python}
+%if %{with python2}
 BuildRequires:	python-devel >= 1:2.5
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
@@ -252,7 +254,7 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 # RH initscripts-specific
 %{__rm} -r $RPM_BUILD_ROOT%{_libexecdir}/initscripts
 
-%if %{with python}
+%if %{with python2}
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
 %py_postclean
@@ -409,7 +411,7 @@ fi
 %{_libdir}/golang/src/redhat.com/audit
 %endif
 
-%if %{with python}
+%if %{with python2}
 %files -n python-audit
 %defattr(644,root,root,755)
 %attr(755,root,root) %{py_sitedir}/_audit.so
