@@ -1,0 +1,48 @@
+diff -ur audit-2.8.5.orig/auparse/interpret.c audit-2.8.5/auparse/interpret.c
+--- audit-2.8.5.orig/auparse/interpret.c	2019-03-01 21:19:13.000000000 +0100
++++ audit-2.8.5/auparse/interpret.c	2022-04-02 20:34:04.713548373 +0200
+@@ -44,8 +44,10 @@
+ #include <linux/ax25.h>
+ #include <linux/atm.h>
+ #include <linux/x25.h>
+-#include <linux/if.h>   // FIXME: remove when ipx.h is fixed
+-#include <linux/ipx.h>
++#ifdef HAVE_IPX_HEADERS
++  #include <linux/if.h>   // FIXME: remove when ipx.h is fixed
++  #include <linux/ipx.h>
++#endif
+ #include <linux/capability.h>
+ #include <sys/personality.h>
+ #include <sys/prctl.h>
+@@ -1151,6 +1153,7 @@
+ 					      x->sax25_call.ax25_call[6]);
+                         }
+                         break;
++#ifdef HAVE_IPX_HEADERS
+                 case AF_IPX:
+                         {
+                                 const struct sockaddr_ipx *ip =
+@@ -1160,6 +1163,7 @@
+ 					str, ip->sipx_port, ip->sipx_network);
+                         }
+                         break;
++#endif
+                 case AF_ATMPVC:
+                         {
+                                 const struct sockaddr_atmpvc* at =
+diff -ur audit-2.8.5.orig/configure.ac audit-2.8.5/configure.ac
+--- audit-2.8.5.orig/configure.ac	2022-04-02 20:33:47.114507326 +0200
++++ audit-2.8.5/configure.ac	2022-04-02 20:34:04.713548373 +0200
+@@ -398,6 +398,12 @@
+ 	AC_DEFINE_UNQUOTED(HAVE_LIBWRAP, [], Define if tcp_wrappers support is enabled )
+ fi
+ 
++# linux/ipx.h - deprecated in 2018
++AC_CHECK_HEADER(linux/ipx.h, ipx_headers=yes, ipx_headers=no)
++if test $ipx_headers = yes ; then
++	AC_DEFINE(HAVE_IPX_HEADERS,1,[IPX packet interpretation])
++fi
++
+ # See if we want to support lower capabilities for plugins
+ LIBCAP_NG_PATH
+ 

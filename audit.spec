@@ -21,7 +21,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	2.8.5
-Release:	4
+Release:	5
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -37,6 +37,7 @@ Patch5:		%{name}-no-refusemanualstop.patch
 Patch6:		%{name}-cronjob.patch
 Patch7:		golang-paths.patch
 Patch8:		gcc10.patch
+Patch9:		ipx_fix.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
@@ -204,6 +205,7 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
@@ -289,25 +291,6 @@ fi
 
 %postun
 %systemd_reload
-
-%triggerpostun -- %{name} < 2.2-2
-%systemd_trigger auditd.service
-
-%triggerpostun -- %{name} < 2.3-1
-if [ -e %{_sysconfdir}/audit/audit.rules.rpmsave ] ; then
-	%{__mv} %{_sysconfdir}/audit/audit.rules{.rpmsave,}
-fi
-%service auditd restart "audit daemon"
-%systemd_post auditd.service
-
-%triggerpostun -- %{name} < 2.5-1
-if [ -f %{_sysconfdir}/audit/rules.d/audit.rules.rpmsave ]; then
-%banner %{name} -e <<EOF
-Since audit 2.5 %{_sysconfdir}/audit/rules.d/audit.rules file (now saved
-as audit.rules.rpmnew) is replaced by a set of numbered rule files - remember
-to update your configuration!
-EOF
-fi
 
 %files
 %defattr(644,root,root,755)
