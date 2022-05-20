@@ -70,8 +70,8 @@ Requires(post,preun,postun):	systemd-units >= 38
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
 Requires:	systemd-units >= 38
-Obsoletes:	audit-audispd-plugins
-Obsoletes:	audit-systemd
+Obsoletes:	audit-audispd-plugins < 1.6.7
+Obsoletes:	audit-systemd < 2.2-2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
