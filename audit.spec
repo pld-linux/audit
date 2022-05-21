@@ -1,7 +1,6 @@
 #
 # Conditional build:
 %bcond_without	kerberos5	# Kerberos V support via heimdal
-%bcond_without	prelude		# prelude audisp plugin
 %bcond_without	golang		# Go language bindings
 %bcond_with	gccgo		# use GCC go frontend instead of golang implementation
 %bcond_without	python		# Python bindings (any)
@@ -20,12 +19,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	2.8.5
-Release:	6
+Version:	3.0.8
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	9455e5773670afdbccaeb92681b2e97d
+# Source0-md5:	13dd813d9fdcc1853d930c081f9e8bdf
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -36,15 +35,14 @@ Patch4:		%{name}-am.patch
 Patch5:		%{name}-no-refusemanualstop.patch
 Patch6:		%{name}-cronjob.patch
 Patch7:		golang-paths.patch
-Patch8:		gcc10.patch
-Patch9:		ipx_fix.patch
+Patch8:		%{name}-flex-array-workaround.patch
+Patch9:		%{name}-undo-flex-array.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
 BuildRequires:	glibc-headers >= 6:2.3.6
 %{?with_kerberos5:BuildRequires:	heimdal-devel}
 BuildRequires:	libcap-ng-devel
-%{?with_prelude:BuildRequires:	libprelude-devel}
 BuildRequires:	libtool
 BuildRequires:	libwrap-devel
 BuildRequires:	linux-libc-headers >= 7:2.6.30
@@ -71,6 +69,7 @@ Requires:	%{name}-libs = %{version}-%{release}
 Requires:	rc-scripts
 Requires:	systemd-units >= 38
 Obsoletes:	audit-audispd-plugins < 1.6.7
+Obsoletes:	audit-plugin-prelude < 3
 Obsoletes:	audit-systemd < 2.2-2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -134,22 +133,6 @@ developing applications that need to use the audit framework.
 Ten pakiet zawiera statyczne biblioteki do tworzenia aplikacji
 używających środowiska audytu.
 
-%package plugin-prelude
-Summary:	prelude plugin for audispd
-Summary(pl.UTF-8):	Wtyczka prelude dla audispd
-Group:		Daemons
-Requires:	%{name} = %{version}-%{release}
-
-%description plugin-prelude
-audisp-prelude is a plugin for the audit event dispatcher daemon,
-audispd, that uses libprelude to send IDMEF alerts for possible
-Intrusion Detection events.
-
-%description plugin-prelude -l pl.UTF-8
-audisp-prelude to wtyczka demona audispd przekazującego zdarzenia
-audytowe wykorzystująca libprelude do wysyłania alarmów IDMEF o
-prawdopodobnych zdarzeniach IDS.
-
 %package -n golang-audit
 Summary:	Go language interface to libaudit library
 Summary(pl.UTF-8):	Interfejs języka Go do biblioteki libaudit
@@ -204,8 +187,10 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+
+# workaround flexible array member (char buf[]) incompatible with swig<=4.0.2
+cp /usr/include/linux/audit.h lib
 %patch8 -p1
-%patch9 -p1
 
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
@@ -227,7 +212,6 @@ sed 's/swig//' -i bindings/Makefile.am
 	--enable-systemd \
 	--with-apparmor \
 	--with-libwrap \
-	%{?with_prelude:--with-prelude} \
 	%{!?with_zos_remote:--disable-zos-remote}
 
 %{__make}
@@ -238,6 +222,11 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/audit/rules.d,%{_var}/log/audit}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+# undo include change
+cd $RPM_BUILD_ROOT
+patch -p0 --no-backup-if-mismatch < %{PATCH9}
+cd -
 
 # default to no audit (and no overhead)
 cp -p rules/10-no-audit.rules $RPM_BUILD_ROOT%{_sysconfdir}/audit/rules.d
@@ -260,11 +249,11 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 %py_comp $RPM_BUILD_ROOT%{py_sitedir}
 %py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
 %py_postclean
-%{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.{la,a}
+%{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.la
 %endif
 
 %if %{with python3}
-%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/*.{la,a}
+%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/*.la
 %endif
 
 %clean
@@ -292,6 +281,34 @@ fi
 %postun
 %systemd_reload
 
+%triggerpostun -- audit < 3.0
+if [ -f %{_sysconfdir}/audisp/audisp-remote.conf.rpmsave -a ! -f %{_sysconfdir}/audit/audisp-remote.conf.rpmnew ]; then
+	mv -f %{_sysconfdir}/audit/audisp-remote.conf %{_sysconfdir}/audit/audisp-remote.conf.rpmnew
+	mv -f %{_sysconfdir}/audisp/audisp-remote.conf.rpmsave %{_sysconfdir}/audit/audisp-remote.conf
+fi
+if [ -f %{_sysconfdir}/audisp/plugins.d/af_unix.conf.rpmsave -a ! -f %{_sysconfdir}/audit/plugins.d/af_unix.conf.rpmnew ]; then
+	mv -f %{_sysconfdir}/audit/plugins.d/af_unix.conf %{_sysconfdir}/audit/plugins.d/af_unix.conf.rpmnew
+	mv -f %{_sysconfdir}/audisp/plugins.d/af_unix.conf.rpmsave %{_sysconfdir}/audit/plugins.d/af_unix.conf
+fi
+if [ -f %{_sysconfdir}/audisp/plugins.d/au-remote.conf.rpmsave -a ! -f %{_sysconfdir}/audit/plugins.d/au-remote.conf.rpmnew ]; then
+	mv -f %{_sysconfdir}/audit/plugins.d/au-remote.conf %{_sysconfdir}/audit/plugins.d/au-remote.conf.rpmnew
+	mv -f %{_sysconfdir}/audisp/plugins.d/au-remote.conf.rpmsave %{_sysconfdir}/audit/plugins.d/au-remote.conf
+fi
+if [ -f %{_sysconfdir}/audisp/plugins.d/syslog.conf.rpmsave -a ! -f %{_sysconfdir}/audit/plugins.d/syslog.conf.rpmnew ]; then
+	mv -f %{_sysconfdir}/audit/plugins.d/syslog.conf %{_sysconfdir}/audit/plugins.d/syslog.conf.rpmnew
+	mv -f %{_sysconfdir}/audisp/plugins.d/syslog.conf.rpmsave %{_sysconfdir}/audit/plugins.d/syslog.conf
+fi
+%if %{with zos_remote}
+if [ -f %{_sysconfdir}/audisp/zos-remote.conf.rpmsave -a ! -f %{_sysconfdir}/audit/zos-remote.conf.rpmnew ]; then
+	mv -f %{_sysconfdir}/audit/zos-remote.conf %{_sysconfdir}/audit/zos-remote.conf.rpmnew
+	mv -f %{_sysconfdir}/audisp/zos-remote.conf.rpmsave %{_sysconfdir}/audit/zos-remote.conf
+fi
+if [ -f %{_sysconfdir}/audisp/plugins.d/audisp-zos-remote.conf.rpmsave -a ! -f %{_sysconfdir}/audit/plugins.d/audisp-zos-remote.conf.rpmnew ]; then
+	mv -f %{_sysconfdir}/audit/plugins.d/audisp-zos-remote.conf %{_sysconfdir}/audit/plugins.d/audisp-zos-remote.conf.rpmnew
+	mv -f %{_sysconfdir}/audisp/plugins.d/audisp-zos-remote.conf.rpmsave %{_sysconfdir}/audit/plugins.d/audisp-zos-remote.conf
+fi
+%endif
+
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog README THANKS rules/{README-rules,*.rules} init.d/auditd.cron
@@ -299,7 +316,6 @@ fi
 %attr(750,root,root) %{_bindir}/aulastlog
 %attr(750,root,root) %{_bindir}/ausyscall
 %attr(750,root,root) %{_bindir}/auvirt
-%attr(750,root,root) %{_sbindir}/audispd
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
 %attr(750,root,root) %{_sbindir}/augenrules
@@ -307,34 +323,31 @@ fi
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
 %attr(755,root,root) %{_sbindir}/audisp-remote
-%{?with_zos_remote:%attr(755,root,root) %{_sbindir}/audispd-zos-remote}
-%dir %{_sysconfdir}/audisp
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audispd.conf
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audisp-remote.conf
-%{?with_zos_remote:%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/zos-remote.conf}
-%dir %{_sysconfdir}/audisp/plugins.d
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/au-remote.conf
-%{?with_zos_remote:%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf}
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/syslog.conf
+%attr(755,root,root) %{_sbindir}/audisp-syslog
+%{_libexecdir}/audit-functions
+%dir %{_datadir}/audit
+%{_datadir}/audit/sample-rules
 %dir %{_sysconfdir}/audit
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audisp-remote.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit-stop.rules
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
+%dir %{_sysconfdir}/audit/plugins.d
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/af_unix.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/au-remote.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit/rules.d
 %attr(640,root,root) %config(noreplace,missingok) %verify(not md5 mtime size) %{_sysconfdir}/audit/rules.d/10-no-audit.rules
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %{systemdunitdir}/auditd.service
 %attr(750,root,root) %dir %{_var}/log/audit
-%{_mandir}/man5/audispd.conf.5*
 %{_mandir}/man5/audisp-remote.conf.5*
 %{_mandir}/man5/auditd.conf.5*
+%{_mandir}/man5/auditd-plugins.5*
 %{_mandir}/man5/ausearch-expression.5*
-%{?with_zos_remote:%{_mandir}/man5/zos-remote.conf.5*}
 %{_mandir}/man7/audit.rules.7*
 %{_mandir}/man8/audisp-remote.8*
-%{?with_zos_remote:%{_mandir}/man8/audispd-zos-remote.8*}
-%{_mandir}/man8/audispd.8*
+%{_mandir}/man8/audisp-syslog.8*
 %{_mandir}/man8/auditctl.8*
 %{_mandir}/man8/auditd.8*
 %{_mandir}/man8/augenrules.8*
@@ -345,6 +358,14 @@ fi
 %{_mandir}/man8/ausyscall.8*
 %{_mandir}/man8/autrace.8*
 %{_mandir}/man8/auvirt.8*
+
+%if %{with zos_remote}
+%attr(755,root,root) %{_sbindir}/audispd-zos-remote
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/zos-remote.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/audispd-zos-remote.conf
+%{_mandir}/man5/zos-remote.conf.5*
+%{_mandir}/man8/audispd-zos-remote.8*
+%endif
 
 %files libs
 %defattr(644,root,root,755)
@@ -376,16 +397,6 @@ fi
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
-
-%if %{with prelude}
-%files plugin-prelude
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_sbindir}/audisp-prelude
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/audisp-prelude.conf
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audisp/plugins.d/au-prelude.conf
-%{_mandir}/man5/audisp-prelude.conf.5*
-%{_mandir}/man8/audisp-prelude.8*
-%endif
 
 %if %{with golang}
 %files -n golang-audit

@@ -1,8 +1,8 @@
---- audit-2.8.4/init.d/Makefile.am.orig	2018-08-29 16:26:20.634007070 +0200
-+++ audit-2.8.4/init.d/Makefile.am	2018-08-29 17:08:25.793978367 +0200
-@@ -30,12 +30,11 @@
- dispconfig = audispd.conf
- dispconfigdir = $(sysconfdir)/audisp
+--- audit-3.0.8/init.d/Makefile.am.orig	2022-05-21 09:06:39.026122432 +0200
++++ audit-3.0.8/init.d/Makefile.am	2022-05-21 09:08:48.412088155 +0200
+@@ -29,12 +29,11 @@ EXTRA_DIST = auditd.init auditd.service
+ 	audit-stop.rules augenrules audit-functions
+ libconfig = libaudit.conf
  if ENABLE_SYSTEMD
 -initdir = /usr/lib/systemd/system
 +systemdunitdir = /lib/systemd/system
@@ -15,9 +15,9 @@
  
  auditdir = $(sysconfdir)/audit
  auditrdir = $(auditdir)/rules.d
-@@ -45,16 +44,13 @@
+@@ -43,17 +42,14 @@ sbin_SCRIPTS = augenrules
+ 
  install-data-hook:
- 	$(INSTALL_DATA) -D -m 640 ${srcdir}/${dispconfig} ${DESTDIR}${dispconfigdir}/${dispconfig}
  	$(INSTALL_DATA) -D -m 640 ${srcdir}/${libconfig} ${DESTDIR}${sysconfdir}/${libconfig}
 -if ENABLE_SYSTEMD
 -else
@@ -26,18 +26,18 @@
  
  install-exec-hook:
  if ENABLE_SYSTEMD
--	mkdir -p ${DESTDIR}${initdir}
-+	mkdir -p ${DESTDIR}${systemdunitdir}
+ 	mkdir -p ${DESTDIR}${initdir}
  	mkdir -p ${DESTDIR}${legacydir}
+ 	mkdir -p ${DESTDIR}${libexecdir}
 -	$(INSTALL_SCRIPT) -D -m 644 ${srcdir}/auditd.service ${DESTDIR}${initdir}/auditd.service
 +	$(INSTALL_SCRIPT) -D -m 644 ${srcdir}/auditd.service ${DESTDIR}${systemdunitdir}/auditd.service
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.rotate ${DESTDIR}${legacydir}/rotate
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.resume ${DESTDIR}${legacydir}/resume
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.reload ${DESTDIR}${legacydir}/reload
-@@ -62,9 +58,8 @@
- 	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.stop ${DESTDIR}${legacydir}/stop
+@@ -62,16 +58,15 @@ if ENABLE_SYSTEMD
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.restart ${DESTDIR}${legacydir}/restart
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.condrestart ${DESTDIR}${legacydir}/condrestart
+ 	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/audit-functions ${DESTDIR}${libexecdir}
 -else
 -	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
  endif
@@ -45,8 +45,7 @@
  	chmod 0750 $(DESTDIR)$(sbindir)/augenrules
  
  
-@@ -72,7 +67,7 @@
- 	rm ${DESTDIR}${dispconfigdir}/${dispconfig}
+ uninstall-hook:
  	rm ${DESTDIR}${sysconfdir}/${libconfig}
  if ENABLE_SYSTEMD
 -	rm ${DESTDIR}${initdir}/auditd.service
@@ -54,7 +53,7 @@
  	rm ${DESTDIR}${legacydir}/rotate
  	rm ${DESTDIR}${legacydir}/resume
  	rm ${DESTDIR}${legacydir}/reload
-@@ -80,8 +75,7 @@
+@@ -79,8 +74,7 @@ if ENABLE_SYSTEMD
  	rm ${DESTDIR}${legacydir}/stop
  	rm ${DESTDIR}${legacydir}/restart
  	rm ${DESTDIR}${legacydir}/condrestart

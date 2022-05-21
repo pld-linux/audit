@@ -1,8 +1,8 @@
---- audit-2.2.3/configure.ac.orig	2013-03-22 22:58:39.531508180 +0100
-+++ audit-2.2.3/configure.ac	2013-03-22 22:59:37.974839060 +0100
-@@ -31,7 +31,7 @@
+--- audit-3.0.8/configure.ac.orig	2022-05-21 09:09:05.738660955 +0200
++++ audit-3.0.8/configure.ac	2022-05-21 09:10:25.904893324 +0200
+@@ -31,7 +31,7 @@ define([AC_INIT_NOTICE],
  AC_REVISION($Revision: 1.3 $)dnl
- AC_INIT(audit,2.8.5)
+ AC_INIT(audit,3.0.8)
  AC_PREREQ(2.12)dnl
 -AM_CONFIG_HEADER(config.h)
 +AC_CONFIG_HEADERS(config.h)
