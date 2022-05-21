@@ -16,6 +16,10 @@
 %undefine	with_python2
 %undefine	with_python3
 %endif
+
+%if %{_ver_ge %(rpm -q --qf='%%{E}:%%{V}' linux-libc-headers) 7:5.17}
+%define		with_flex_array_fix	1
+%endif
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
@@ -57,7 +61,7 @@ BuildRequires:	python3-devel
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.644
+BuildRequires:	rpmbuild(macros) >= 1.750
 BuildRequires:	sed >= 4.0
 %if %{with golang}
 %{?with_gccgo:BuildRequires:	gcc-go >= 5.1}
@@ -188,9 +192,11 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch6 -p1
 %patch7 -p1
 
+%if %{with flex_array_fix}
 # workaround flexible array member (char buf[]) incompatible with swig<=4.0.2
 cp /usr/include/linux/audit.h lib
 %patch8 -p1
+%endif
 
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
@@ -223,10 +229,12 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/audit/rules.d,%{_var}/log/audit}
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+%if %{with flex_array_fix}
 # undo include change
 cd $RPM_BUILD_ROOT
 patch -p0 --no-backup-if-mismatch < %{PATCH9}
 cd -
+%endif
 
 # default to no audit (and no overhead)
 cp -p rules/10-no-audit.rules $RPM_BUILD_ROOT%{_sysconfdir}/audit/rules.d
