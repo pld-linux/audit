@@ -23,12 +23,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	3.0.8
+Version:	3.0.9
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	13dd813d9fdcc1853d930c081f9e8bdf
+# Source0-md5:	b10d29cc8454316eb0ec34f4c0345c2d
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -37,7 +37,6 @@ Patch2:		%{name}-nolibs.patch
 Patch3:		%{name}-systemd-notonly.patch
 Patch4:		%{name}-am.patch
 Patch5:		%{name}-no-refusemanualstop.patch
-Patch6:		%{name}-cronjob.patch
 Patch7:		golang-paths.patch
 Patch8:		%{name}-flex-array-workaround.patch
 Patch9:		%{name}-undo-flex-array.patch
@@ -189,7 +188,6 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
 %patch7 -p1
 
 %if %{with flex_array_fix}
