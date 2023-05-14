@@ -1,5 +1,5 @@
---- audit-3.0.8/init.d/Makefile.am.orig	2022-05-21 09:06:39.026122432 +0200
-+++ audit-3.0.8/init.d/Makefile.am	2022-05-21 09:08:48.412088155 +0200
+--- audit-3.1.1/init.d/Makefile.am.orig	2023-05-13 23:11:37.245210682 +0200
++++ audit-3.1.1/init.d/Makefile.am	2023-05-14 07:07:46.290438881 +0200
 @@ -29,12 +29,11 @@ EXTRA_DIST = auditd.init auditd.service
  	audit-stop.rules augenrules audit-functions
  libconfig = libaudit.conf
@@ -42,7 +42,7 @@
 -	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
  endif
 +	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
- 	chmod 0750 $(DESTDIR)$(sbindir)/augenrules
+ 	chmod 0755 $(DESTDIR)$(sbindir)/augenrules
  
  
  uninstall-hook:

@@ -23,19 +23,18 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	3.0.9
+Version:	3.1.1
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	b10d29cc8454316eb0ec34f4c0345c2d
+# Source0-md5:	75363550690ee057f2fcf4f13eddcb4d
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
 Patch1:		%{name}-m4.patch
 Patch2:		%{name}-nolibs.patch
 Patch3:		%{name}-systemd-notonly.patch
-Patch4:		%{name}-am.patch
 Patch5:		%{name}-no-refusemanualstop.patch
 Patch7:		golang-paths.patch
 Patch8:		%{name}-flex-array-workaround.patch
@@ -46,7 +45,7 @@ BuildRequires:	automake >= 1:1.12.6
 BuildRequires:	glibc-headers >= 6:2.3.6
 %{?with_kerberos5:BuildRequires:	heimdal-devel}
 BuildRequires:	libcap-ng-devel
-BuildRequires:	libtool
+BuildRequires:	libtool >= 2:2
 BuildRequires:	libwrap-devel
 BuildRequires:	linux-libc-headers >= 7:2.6.30
 %{?with_zos_remote:BuildRequires:	openldap-devel}
@@ -186,12 +185,11 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 %patch5 -p1
 %patch7 -p1
 
 %if %{with flex_array_fix}
-# workaround flexible array member (char buf[]) incompatible with swig<=4.0.2
+# workaround flexible array member (char buf[]) incompatible with swig<=4.1.1
 cp /usr/include/linux/audit.h lib
 %patch8 -p1
 %endif
@@ -215,6 +213,7 @@ sed 's/swig//' -i bindings/Makefile.am
 	%{?with_kerberos5:--enable-gssapi-krb5} \
 	--enable-systemd \
 	--with-apparmor \
+	--with-io_uring \
 	--with-libwrap \
 	%{!?with_zos_remote:--disable-zos-remote}
 
@@ -241,10 +240,10 @@ install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
 install -d $RPM_BUILD_ROOT/%{_lib}
-mv -f $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
 ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libaudit.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libaudit.so
-mv -f $RPM_BUILD_ROOT%{_libdir}/libauparse.so.* $RPM_BUILD_ROOT/%{_lib}
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/libauparse.so.* $RPM_BUILD_ROOT/%{_lib}
 ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libauparse.so
 
@@ -328,6 +327,7 @@ fi
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(750,root,root) %{_sbindir}/autrace
+%attr(755,root,root) %{_sbindir}/audisp-af_unix
 %attr(755,root,root) %{_sbindir}/audisp-remote
 %attr(755,root,root) %{_sbindir}/audisp-syslog
 %{_libexecdir}/audit-functions
@@ -352,6 +352,7 @@ fi
 %{_mandir}/man5/auditd-plugins.5*
 %{_mandir}/man5/ausearch-expression.5*
 %{_mandir}/man7/audit.rules.7*
+%{_mandir}/man8/audisp-af_unix.8*
 %{_mandir}/man8/audisp-remote.8*
 %{_mandir}/man8/audisp-syslog.8*
 %{_mandir}/man8/auditctl.8*
