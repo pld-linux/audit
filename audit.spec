@@ -32,12 +32,12 @@ Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
-Patch2:		%{name}-nolibs.patch
-Patch3:		%{name}-systemd-notonly.patch
-Patch5:		%{name}-no-refusemanualstop.patch
-Patch7:		golang-paths.patch
-Patch8:		%{name}-flex-array-workaround.patch
-Patch9:		%{name}-undo-flex-array.patch
+Patch1:		%{name}-nolibs.patch
+Patch2:		%{name}-systemd-notonly.patch
+Patch3:		%{name}-no-refusemanualstop.patch
+Patch4:		golang-paths.patch
+Patch5:		%{name}-flex-array-workaround.patch
+Patch6:		%{name}-undo-flex-array.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
@@ -181,15 +181,15 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch5 -p1
-%patch7 -p1
+%patch4 -p1
 
 %if %{with flex_array_fix}
 # workaround flexible array member (char buf[]) incompatible with swig<=4.1.1
 cp /usr/include/linux/audit.h lib
-%patch8 -p1
+%patch5 -p1
 %endif
 
 %if %{without python}
@@ -227,7 +227,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/audit/rules.d,%{_var}/log/audit}
 %if %{with flex_array_fix}
 # undo include change
 cd $RPM_BUILD_ROOT
-patch -p0 --no-backup-if-mismatch < %{PATCH9}
+patch -p0 --no-backup-if-mismatch < %{PATCH6}
 cd -
 %endif
 
