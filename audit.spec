@@ -8,7 +8,7 @@
 %bcond_without	python3		# Python 3 bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 
-%ifnarch %{ix86} %{x8664} %{arm} aarch64 mips64 mips64le ppc64 ppc64le s390x
+%ifnarch %{go_arches}
 %define		with_gccgo	1
 %endif
 
@@ -58,7 +58,7 @@ BuildRequires:	python3-devel
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.750
+BuildRequires:	rpmbuild(macros) >= 2.009
 BuildRequires:	sed >= 4.0
 %if %{with golang}
 %{?with_gccgo:BuildRequires:	gcc-go >= 5.1}
