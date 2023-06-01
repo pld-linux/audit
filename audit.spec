@@ -24,7 +24,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	3.1.1
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
@@ -32,7 +32,6 @@ Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
-Patch1:		%{name}-m4.patch
 Patch2:		%{name}-nolibs.patch
 Patch3:		%{name}-systemd-notonly.patch
 Patch5:		%{name}-no-refusemanualstop.patch
@@ -182,7 +181,6 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch5 -p1
