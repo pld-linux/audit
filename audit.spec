@@ -50,6 +50,7 @@ BuildRequires:	linux-libc-headers >= 7:2.6.30
 %{?with_zos_remote:BuildRequires:	openldap-devel}
 %if %{with python2}
 BuildRequires:	python-devel >= 1:2.5
+BuildRequires:	python-modules
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
 %endif
