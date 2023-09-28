@@ -17,18 +17,15 @@
 %undefine	with_python3
 %endif
 
-%if %{_ver_ge %(rpm -q --qf='%%{E}:%%{V}' linux-libc-headers) 7:5.17}
-%define		with_flex_array_fix	1
-%endif
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	3.1.1
-Release:	2
+Version:	3.1.2
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	75363550690ee057f2fcf4f13eddcb4d
+# Source0-md5:	9d325b543f79b20a8f7ff2021ebac0c3
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -36,8 +33,6 @@ Patch1:		%{name}-nolibs.patch
 Patch2:		%{name}-systemd-notonly.patch
 Patch3:		%{name}-no-refusemanualstop.patch
 Patch4:		golang-paths.patch
-Patch5:		%{name}-flex-array-workaround.patch
-Patch6:		%{name}-undo-flex-array.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
@@ -187,12 +182,6 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch3 -p1
 %patch4 -p1
 
-%if %{with flex_array_fix}
-# workaround flexible array member (char buf[]) incompatible with swig<=4.1.1
-cp /usr/include/linux/audit.h lib
-%patch5 -p1
-%endif
-
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
 sed 's/swig//' -i bindings/Makefile.am
@@ -224,13 +213,6 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/audit/rules.d,%{_var}/log/audit}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-%if %{with flex_array_fix}
-# undo include change
-cd $RPM_BUILD_ROOT
-patch -p0 --no-backup-if-mismatch < %{PATCH6}
-cd -
-%endif
 
 # default to no audit (and no overhead)
 cp -p rules/10-no-audit.rules $RPM_BUILD_ROOT%{_sysconfdir}/audit/rules.d
