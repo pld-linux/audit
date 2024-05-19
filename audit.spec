@@ -33,6 +33,7 @@ Patch1:		%{name}-nolibs.patch
 Patch2:		%{name}-systemd-notonly.patch
 Patch3:		%{name}-no-refusemanualstop.patch
 Patch4:		golang-paths.patch
+Patch5:		gcc14.patch
 URL:		http://people.redhat.com/sgrubb/audit/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
@@ -181,6 +182,7 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
