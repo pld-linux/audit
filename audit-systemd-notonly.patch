@@ -1,7 +1,7 @@
---- audit-3.1.1/init.d/Makefile.am.orig	2023-05-13 23:11:37.245210682 +0200
-+++ audit-3.1.1/init.d/Makefile.am	2023-05-14 07:07:46.290438881 +0200
+--- audit-3.1.4/init.d/Makefile.am.orig	2024-05-19 09:59:22.005980091 +0200
++++ audit-3.1.4/init.d/Makefile.am	2024-05-19 10:14:22.091103912 +0200
 @@ -29,12 +29,11 @@ EXTRA_DIST = auditd.init auditd.service
- 	audit-stop.rules augenrules audit-functions
+ 	audit-stop.rules augenrules
  libconfig = libaudit.conf
  if ENABLE_SYSTEMD
 -initdir = /usr/lib/systemd/system
@@ -34,10 +34,10 @@
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.rotate ${DESTDIR}${legacydir}/rotate
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.resume ${DESTDIR}${legacydir}/resume
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.reload ${DESTDIR}${legacydir}/reload
-@@ -62,16 +58,15 @@ if ENABLE_SYSTEMD
+@@ -61,16 +57,15 @@ if ENABLE_SYSTEMD
+ 	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.stop ${DESTDIR}${legacydir}/stop
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.restart ${DESTDIR}${legacydir}/restart
  	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/auditd.condrestart ${DESTDIR}${legacydir}/condrestart
- 	$(INSTALL_SCRIPT) -D -m 750 ${srcdir}/audit-functions ${DESTDIR}${libexecdir}
 -else
 -	$(INSTALL_SCRIPT) -D ${srcdir}/auditd.init ${DESTDIR}${initdir}/auditd
  endif
@@ -53,7 +53,7 @@
  	rm ${DESTDIR}${legacydir}/rotate
  	rm ${DESTDIR}${legacydir}/resume
  	rm ${DESTDIR}${legacydir}/reload
-@@ -79,8 +74,7 @@ if ENABLE_SYSTEMD
+@@ -78,8 +73,7 @@ if ENABLE_SYSTEMD
  	rm ${DESTDIR}${legacydir}/stop
  	rm ${DESTDIR}${legacydir}/restart
  	rm ${DESTDIR}${legacydir}/condrestart

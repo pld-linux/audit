@@ -20,12 +20,12 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	3.1.2
+Version:	3.1.4
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	9d325b543f79b20a8f7ff2021ebac0c3
+# Source0-md5:	ff038f1056572ecfa01293b96cc33d70
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-install.patch
@@ -311,7 +311,6 @@ fi
 %attr(755,root,root) %{_sbindir}/audisp-af_unix
 %attr(755,root,root) %{_sbindir}/audisp-remote
 %attr(755,root,root) %{_sbindir}/audisp-syslog
-%{_libexecdir}/audit-functions
 %dir %{_datadir}/audit
 %{_datadir}/audit/sample-rules
 %dir %{_sysconfdir}/audit
