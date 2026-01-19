@@ -3,38 +3,28 @@
 %bcond_without	kerberos5	# Kerberos V support via heimdal
 %bcond_without	golang		# Go language bindings
 %bcond_with	gccgo		# use GCC go frontend instead of golang implementation
-%bcond_without	python		# Python bindings (any)
-%bcond_without	python2		# Python 2 bindings
-%bcond_without	python3		# Python 3 bindings
+%bcond_without	python		# Python bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 
 %ifnarch %{go_arches}
 %define		with_gccgo	1
 %endif
 
-%if %{without python}
-%undefine	with_python2
-%undefine	with_python3
-%endif
-
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	3.1.4
-Release:	3
+Version:	4.1.2
+Release:	1
 License:	GPL v2+
 Group:		Daemons
-Source0:	https://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-# Source0-md5:	ff038f1056572ecfa01293b96cc33d70
+Source0:	https://github.com/linux-audit/audit-userspace/archive/refs/tags/v%{version}.tar.gz
+# Source0-md5:	6c02718852fb6993c8a97dd39c1ffc1b
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
-Patch0:		%{name}-install.patch
-Patch1:		%{name}-nolibs.patch
-Patch2:		%{name}-systemd-notonly.patch
-Patch3:		%{name}-no-refusemanualstop.patch
-Patch4:		golang-paths.patch
-Patch5:		gcc14.patch
-URL:		http://people.redhat.com/sgrubb/audit/
+Patch0:		%{name}-nolibs.patch
+Patch1:		%{name}-no-refusemanualstop.patch
+Patch2:		golang-paths.patch
+URL:		https://github.com/linux-audit/audit-userspace
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
 BuildRequires:	glibc-headers >= 6:2.3.6
@@ -44,13 +34,7 @@ BuildRequires:	libtool >= 2:2
 BuildRequires:	libwrap-devel
 BuildRequires:	linux-libc-headers >= 7:2.6.30
 %{?with_zos_remote:BuildRequires:	openldap-devel}
-%if %{with python2}
-BuildRequires:	python-devel >= 1:2.5
-BuildRequires:	python-modules
-BuildRequires:	rpm-pythonprov
-BuildRequires:	swig-python
-%endif
-%if %{with python3}
+%if %{with python}
 BuildRequires:	python3-devel
 BuildRequires:	rpm-pythonprov
 BuildRequires:	swig-python
@@ -149,19 +133,6 @@ Go language interface to libaudit library.
 %description -n golang-audit -l pl.UTF-8
 Interfejs języka Go do biblioteki libaudit.
 
-%package -n python-audit
-Summary:	Python 2.x interface to libaudit library
-Summary(pl.UTF-8):	Interfejs Pythona 2.x do biblioteki libaudit
-License:	LGPL v2.1+
-Group:		Libraries/Python
-Requires:	%{name}-libs = %{version}-%{release}
-
-%description -n python-audit
-Python 2.x interface to libaudit library.
-
-%description -n python-audit -l pl.UTF-8
-Interfejs Pythona 2.x do biblioteki libaudit.
-
 %package -n python3-audit
 Summary:	Python 3.x interface to libaudit library
 Summary(pl.UTF-8):	Interfejs Pythona 3.x do biblioteki libaudit
@@ -176,13 +147,10 @@ Python 3.x interface to libaudit library.
 Interfejs Pythona 3.x do biblioteki libaudit.
 
 %prep
-%setup -q
-%patch -P 0 -p1
-%patch -P 1 -p1
-%patch -P 2 -p1
-%patch -P 3 -p1
-%patch -P 4 -p1
-%patch -P 5 -p1
+%setup -q -n %{name}-userspace-%{version}
+%patch -P0 -p1
+%patch -P1 -p1
+%patch -P2 -p1
 
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac
@@ -201,7 +169,6 @@ sed 's/swig//' -i bindings/Makefile.am
 	CFLAGS_FOR_BUILD="%{rpmcflags}" \
 	LDFLAGS_FOR_BUILD="%{rpmldflags}" \
 	%{?with_kerberos5:--enable-gssapi-krb5} \
-	--enable-systemd \
 	--with-apparmor \
 	--with-io_uring \
 	--with-libwrap \
@@ -211,16 +178,17 @@ sed 's/swig//' -i bindings/Makefile.am
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/audit/rules.d,%{_var}/log/audit}
+install -d $RPM_BUILD_ROOT{%{_initddir},%{_sysconfdir}/{audit/rules.d,sysconfig},%{_var}/log/audit}
 
 %{__make} install \
+	initdir=%{systemdunitdir} \
 	DESTDIR=$RPM_BUILD_ROOT
 
 # default to no audit (and no overhead)
 cp -p rules/10-no-audit.rules $RPM_BUILD_ROOT%{_sysconfdir}/audit/rules.d
 
-install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
-install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
+cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/auditd
+cp -p %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/auditd
 
 install -d $RPM_BUILD_ROOT/%{_lib}
 %{__mv} $RPM_BUILD_ROOT%{_libdir}/libaudit.so.* $RPM_BUILD_ROOT/%{_lib}
@@ -229,18 +197,14 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libaudit.so.*.*.*) \
 %{__mv} $RPM_BUILD_ROOT%{_libdir}/libauparse.so.* $RPM_BUILD_ROOT/%{_lib}
 ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 	$RPM_BUILD_ROOT%{_libdir}/libauparse.so
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/libauplugin.so.* $RPM_BUILD_ROOT/%{_lib}
+ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauplugin.so.*.*.*) \
+     $RPM_BUILD_ROOT%{_libdir}/libauplugin.so
 
 # RH initscripts-specific
 %{__rm} -r $RPM_BUILD_ROOT%{_libexecdir}/initscripts
 
-%if %{with python2}
-%py_comp $RPM_BUILD_ROOT%{py_sitedir}
-%py_ocomp $RPM_BUILD_ROOT%{py_sitedir}
-%py_postclean
-%{__rm} $RPM_BUILD_ROOT%{py_sitedir}/*.la
-%endif
-
-%if %{with python3}
+%if %{with python}
 %{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/*.la
 %endif
 
@@ -299,42 +263,46 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README THANKS rules/{README-rules,*.rules} init.d/auditd.cron
+%doc AUTHORS ChangeLog README.md THANKS rules/{README-rules,*.rules} init.d/auditd.cron
 %attr(750,root,root) %{_bindir}/aulast
 %attr(750,root,root) %{_bindir}/aulastlog
 %attr(750,root,root) %{_bindir}/ausyscall
-%attr(750,root,root) %{_bindir}/auvirt
 %attr(750,root,root) %{_sbindir}/auditctl
 %attr(750,root,root) %{_sbindir}/auditd
 %attr(750,root,root) %{_sbindir}/augenrules
 %attr(750,root,root) %{_sbindir}/aureport
 %attr(750,root,root) %{_sbindir}/ausearch
-%attr(750,root,root) %{_sbindir}/autrace
 %attr(755,root,root) %{_sbindir}/audisp-af_unix
+%attr(755,root,root) %{_sbindir}/audisp-filter
 %attr(755,root,root) %{_sbindir}/audisp-remote
 %attr(755,root,root) %{_sbindir}/audisp-syslog
-%dir %{_datadir}/audit
-%{_datadir}/audit/sample-rules
 %dir %{_sysconfdir}/audit
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audisp-filter.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audisp-remote.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit-stop.rules
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
 %dir %{_sysconfdir}/audit/plugins.d
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/af_unix.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/au-remote.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/filter.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit/rules.d
 %attr(640,root,root) %config(noreplace,missingok) %verify(not md5 mtime size) %{_sysconfdir}/audit/rules.d/10-no-audit.rules
 %attr(754,root,root) /etc/rc.d/init.d/auditd
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/auditd
 %{systemdunitdir}/auditd.service
+%{systemdunitdir}/audit-rules.service
 %attr(750,root,root) %dir %{_var}/log/audit
+%{_datadir}/audit-rules
+%{systemdtmpfilesdir}/audit.conf
 %{_mandir}/man5/audisp-remote.conf.5*
 %{_mandir}/man5/auditd.conf.5*
+%{_mandir}/man5/auditd.cron.5*
 %{_mandir}/man5/auditd-plugins.5*
 %{_mandir}/man5/ausearch-expression.5*
 %{_mandir}/man7/audit.rules.7*
 %{_mandir}/man8/audisp-af_unix.8*
+%{_mandir}/man8/audisp-filter.8*
 %{_mandir}/man8/audisp-remote.8*
 %{_mandir}/man8/audisp-syslog.8*
 %{_mandir}/man8/auditctl.8*
@@ -345,8 +313,6 @@ fi
 %{_mandir}/man8/aureport.8*
 %{_mandir}/man8/ausearch.8*
 %{_mandir}/man8/ausyscall.8*
-%{_mandir}/man8/autrace.8*
-%{_mandir}/man8/auvirt.8*
 
 %if %{with zos_remote}
 %attr(755,root,root) %{_sbindir}/audispd-zos-remote
@@ -358,34 +324,41 @@ fi
 
 %files libs
 %defattr(644,root,root,755)
-%attr(755,root,root) /%{_lib}/libaudit.so.*.*.*
-%attr(755,root,root) %ghost /%{_lib}/libaudit.so.1
-%attr(755,root,root) /%{_lib}/libauparse.so.*.*.*
-%attr(755,root,root) %ghost /%{_lib}/libauparse.so.0
+/%{_lib}/libaudit.so.*.*.*
+%ghost /%{_lib}/libaudit.so.1
+/%{_lib}/libauparse.so.*.*.*
+%ghost /%{_lib}/libauparse.so.0
+/%{_lib}/libauplugin.so.*.*.*
+%ghost /%{_lib}/libauplugin.so.1
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/libaudit.conf
 %{_mandir}/man5/libaudit.conf.5*
 
 %files libs-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libaudit.so
-%attr(755,root,root) %{_libdir}/libauparse.so
+%{_libdir}/libaudit.so
+%{_libdir}/libauparse.so
+%{_libdir}/libauplugin.so
 %{_libdir}/libaudit.la
 %{_libdir}/libauparse.la
+%{_libdir}/libauplugin.la
+%{_includedir}/audit*.h
 %{_includedir}/auparse*.h
+%{_includedir}/auplugin*.h
 %{_includedir}/libaudit.h
 %{_pkgconfigdir}/audit.pc
 %{_pkgconfigdir}/auparse.pc
 %{_aclocaldir}/audit.m4
 %{_mandir}/man3/audit_*.3*
 %{_mandir}/man3/auparse_*.3*
+%{_mandir}/man3/auplugin*.3*
 %{_mandir}/man3/ausearch_*.3*
 %{_mandir}/man3/get_auditfail_action.3*
-%{_mandir}/man3/set_aumessage_mode.3*
 
 %files libs-static
 %defattr(644,root,root,755)
 %{_libdir}/libaudit.a
 %{_libdir}/libauparse.a
+%{_libdir}/libauplugin.a
 
 %if %{with golang}
 %files -n golang-audit
@@ -394,15 +367,7 @@ fi
 %{_libdir}/golang/src/redhat.com/audit
 %endif
 
-%if %{with python2}
-%files -n python-audit
-%defattr(644,root,root,755)
-%attr(755,root,root) %{py_sitedir}/_audit.so
-%attr(755,root,root) %{py_sitedir}/auparse.so
-%{py_sitedir}/audit.py[co]
-%endif
-
-%if %{with python3}
+%if %{with python}
 %files -n python3-audit
 %defattr(644,root,root,755)
 %attr(755,root,root) %{py3_sitedir}/_audit.so
