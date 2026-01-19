@@ -164,14 +164,18 @@ sed 's/swig//' -i bindings/Makefile.am
 %{__autoheader}
 %{__automake}
 %configure \
+	--runstatedir=%{_rundir} \
 	CC_FOR_BUILD="%{__cc}" \
 	CPPFLAGS_FOR_BUILD="%{rpmcppflags}" \
 	CFLAGS_FOR_BUILD="%{rpmcflags}" \
 	LDFLAGS_FOR_BUILD="%{rpmldflags}" \
+	--enable-experimental \
 	%{?with_kerberos5:--enable-gssapi-krb5} \
 	--with-apparmor \
 	--with-io_uring \
+	--with-libcap-ng=yes \
 	--with-libwrap \
+	--with-nftables \
 	%{!?with_zos_remote:--disable-zos-remote}
 
 %{__make}
@@ -274,16 +278,22 @@ fi
 %attr(750,root,root) %{_sbindir}/ausearch
 %attr(755,root,root) %{_sbindir}/audisp-af_unix
 %attr(755,root,root) %{_sbindir}/audisp-filter
+%attr(755,root,root) %{_sbindir}/audisp-ids
 %attr(755,root,root) %{_sbindir}/audisp-remote
+%attr(755,root,root) %{_sbindir}/audisp-statsd
 %attr(755,root,root) %{_sbindir}/audisp-syslog
 %dir %{_sysconfdir}/audit
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audisp-filter.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audisp-remote.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audisp-statsd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/audit-stop.rules
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/auditd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/ids.conf
 %dir %{_sysconfdir}/audit/plugins.d
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/af_unix.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/audisp-ids.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/au-remote.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/au-statsd.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/filter.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/audit/plugins.d/syslog.conf
 %dir %{_sysconfdir}/audit/rules.d
@@ -304,6 +314,7 @@ fi
 %{_mandir}/man8/audisp-af_unix.8*
 %{_mandir}/man8/audisp-filter.8*
 %{_mandir}/man8/audisp-remote.8*
+%{_mandir}/man8/audisp-statsd.8*
 %{_mandir}/man8/audisp-syslog.8*
 %{_mandir}/man8/auditctl.8*
 %{_mandir}/man8/auditd.8*
