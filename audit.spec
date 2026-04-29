@@ -13,17 +13,18 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	4.1.2
+Version:	4.1.4
 Release:	1
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://github.com/linux-audit/audit-userspace/archive/refs/tags/v%{version}.tar.gz
-# Source0-md5:	6c02718852fb6993c8a97dd39c1ffc1b
+# Source0-md5:	6575a4383f54ce971352620e6b5f746a
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-nolibs.patch
 Patch1:		%{name}-no-refusemanualstop.patch
 Patch2:		golang-paths.patch
+Patch3:		augenrules-shebang.patch
 URL:		https://github.com/linux-audit/audit-userspace
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake >= 1:1.12.6
@@ -151,6 +152,7 @@ Interfejs Pythona 3.x do biblioteki libaudit.
 %patch -P0 -p1
 %patch -P1 -p1
 %patch -P2 -p1
+%patch -P3 -p1
 
 %if %{without python}
 sed 's#[^ ]*swig/[^ ]*/Makefile ##g' -i configure.ac

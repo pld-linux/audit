@@ -1,0 +1,8 @@
+--- audit-userspace-4.1.4.orig/init.d/augenrules.in	2025-03-18 20:00:30.000000000 +0100
++++ audit-userspace-4.1.4/init.d/augenrules.in	2026-04-29 00:00:00.000000000 +0200
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env sh
++#!/bin/sh
+ 
+ # Script to concatenate rules files found in a base audit rules directory
+ # to form a single /etc/audit/audit.rules file suitable for loading into
