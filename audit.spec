@@ -14,7 +14,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	4.1.4
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 Source0:	https://github.com/linux-audit/audit-userspace/archive/refs/tags/v%{version}.tar.gz

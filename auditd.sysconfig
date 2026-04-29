@@ -3,6 +3,13 @@
 # Nice level for auditd
 #SERVICE_RUN_NICE_LEVEL=0
 
+#   nochange - keep the current kernel setting and let loaded rules decide
+#              whether auditing is enabled
+#   enable   - force auditing on at startup
+#   disable  - force auditing off at startup
+# The default is "nochange".
+AUDITD_ENABLE_STATE="nochange"
+
 # Add extra options here
 EXTRAOPTIONS=""
 #
