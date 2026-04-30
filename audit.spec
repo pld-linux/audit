@@ -3,7 +3,7 @@
 %bcond_without	kerberos5	# Kerberos V support via heimdal
 %bcond_without	golang		# Go language bindings
 %bcond_with	gccgo		# use GCC go frontend instead of golang implementation
-%bcond_without	python		# Python bindings
+%bcond_without	python		# Python (3.x) bindings
 %bcond_without	zos_remote	# zos-remote audisp plugin (LDAP dep)
 
 %ifnarch %{go_arches}
@@ -17,6 +17,8 @@ Version:	4.1.4
 Release:	2
 License:	GPL v2+
 Group:		Daemons
+# TODO: use
+#Source0:	https://github.com/linux-audit/audit-userspace/archive/v%{version}/%{name}-userspace-%{version}.tar.gz
 Source0:	https://github.com/linux-audit/audit-userspace/archive/refs/tags/v%{version}.tar.gz
 # Source0-md5:	6575a4383f54ce971352620e6b5f746a
 Source2:	%{name}d.init
@@ -36,9 +38,9 @@ BuildRequires:	libwrap-devel
 BuildRequires:	linux-libc-headers >= 7:2.6.30
 %{?with_zos_remote:BuildRequires:	openldap-devel}
 %if %{with python}
-BuildRequires:	python3-devel
+BuildRequires:	python3-devel >= 1:3.2
 BuildRequires:	rpm-pythonprov
-BuildRequires:	swig-python
+BuildRequires:	swig-python >= 2
 %endif
 BuildRequires:	rpmbuild(macros) >= 2.009
 BuildRequires:	sed >= 4.0
@@ -135,17 +137,18 @@ Go language interface to libaudit library.
 Interfejs języka Go do biblioteki libaudit.
 
 %package -n python3-audit
-Summary:	Python 3.x interface to libaudit library
-Summary(pl.UTF-8):	Interfejs Pythona 3.x do biblioteki libaudit
+Summary:	Python interface to libaudit library
+Summary(pl.UTF-8):	Interfejs Pythona do biblioteki libaudit
 License:	LGPL v2.1+
 Group:		Libraries/Python
 Requires:	%{name}-libs = %{version}-%{release}
+Obsoletes:	python-audit < 4
 
 %description -n python3-audit
-Python 3.x interface to libaudit library.
+Python interface to libaudit library.
 
 %description -n python3-audit -l pl.UTF-8
-Interfejs Pythona 3.x do biblioteki libaudit.
+Interfejs Pythona do biblioteki libaudit.
 
 %prep
 %setup -q -n %{name}-userspace-%{version}
@@ -173,12 +176,12 @@ sed 's/swig//' -i bindings/Makefile.am
 	LDFLAGS_FOR_BUILD="%{rpmldflags}" \
 	--enable-experimental \
 	%{?with_kerberos5:--enable-gssapi-krb5} \
+	%{!?with_zos_remote:--disable-zos-remote} \
 	--with-apparmor \
 	--with-io_uring \
-	--with-libcap-ng=yes \
+	--with-libcap-ng \
 	--with-libwrap \
-	--with-nftables \
-	%{!?with_zos_remote:--disable-zos-remote}
+	--with-nftables
 
 %{__make}
 
@@ -206,6 +209,10 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 %{__mv} $RPM_BUILD_ROOT%{_libdir}/libauplugin.so.* $RPM_BUILD_ROOT/%{_lib}
 ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauplugin.so.*.*.*) \
      $RPM_BUILD_ROOT%{_libdir}/libauplugin.so
+
+# update location
+install -d $RPM_BUILD_ROOT%{bash_compdir}
+%{__mv} $RPM_BUILD_ROOT%{_sysconfdir}/bash_completion.d/audit.bash_completion $RPM_BUILD_ROOT%{bash_compdir}/audit
 
 # RH initscripts-specific
 %{__rm} -r $RPM_BUILD_ROOT%{_libexecdir}/initscripts
@@ -269,7 +276,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS ChangeLog README.md THANKS rules/{README-rules,*.rules} init.d/auditd.cron
+%doc AUTHORS ChangeLog README.md SECURITY.md THANKS rules/{README-rules,*.rules} init.d/auditd.cron
 %attr(750,root,root) %{_bindir}/aulast
 %attr(750,root,root) %{_bindir}/aulastlog
 %attr(750,root,root) %{_bindir}/ausyscall
@@ -306,6 +313,7 @@ fi
 %{systemdunitdir}/audit-rules.service
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_datadir}/audit-rules
+%{bash_compdir}/audit
 %{systemdtmpfilesdir}/audit.conf
 %{_mandir}/man5/audisp-remote.conf.5*
 %{_mandir}/man5/auditd.conf.5*
@@ -383,8 +391,8 @@ fi
 %if %{with python}
 %files -n python3-audit
 %defattr(644,root,root,755)
-%attr(755,root,root) %{py3_sitedir}/_audit.so
-%attr(755,root,root) %{py3_sitedir}/auparse.so
+%{py3_sitedir}/_audit.so
+%{py3_sitedir}/auparse.so
 %{py3_sitedir}/audit.py
 %{py3_sitedir}/__pycache__/audit.cpython-*.py[co]
 %endif
