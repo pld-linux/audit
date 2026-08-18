@@ -13,14 +13,14 @@
 Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
-Version:	4.1.4
-Release:	2
+Version:	4.2.1
+Release:	1
 License:	GPL v2+
 Group:		Daemons
 # TODO: use
 #Source0:	https://github.com/linux-audit/audit-userspace/archive/v%{version}/%{name}-userspace-%{version}.tar.gz
 Source0:	https://github.com/linux-audit/audit-userspace/archive/refs/tags/v%{version}.tar.gz
-# Source0-md5:	6575a4383f54ce971352620e6b5f746a
+# Source0-md5:	6f61e4f4557da6890afc319b7c9168a8
 Source2:	%{name}d.init
 Source3:	%{name}d.sysconfig
 Patch0:		%{name}-nolibs.patch
@@ -210,9 +210,6 @@ ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauparse.so.*.*.*) \
 ln -sf /%{_lib}/$(basename $RPM_BUILD_ROOT/%{_lib}/libauplugin.so.*.*.*) \
      $RPM_BUILD_ROOT%{_libdir}/libauplugin.so
 
-# update location
-install -d $RPM_BUILD_ROOT%{bash_compdir}
-%{__mv} $RPM_BUILD_ROOT%{_sysconfdir}/bash_completion.d/audit.bash_completion $RPM_BUILD_ROOT%{bash_compdir}/audit
 
 # RH initscripts-specific
 %{__rm} -r $RPM_BUILD_ROOT%{_libexecdir}/initscripts
@@ -313,7 +310,10 @@ fi
 %{systemdunitdir}/audit-rules.service
 %attr(750,root,root) %dir %{_var}/log/audit
 %{_datadir}/audit-rules
-%{bash_compdir}/audit
+%{bash_compdir}/auditctl
+%{bash_compdir}/aureport
+%{bash_compdir}/ausearch
+%{bash_compdir}/augenrules
 %{systemdtmpfilesdir}/audit.conf
 %{_mandir}/man5/audisp-remote.conf.5*
 %{_mandir}/man5/auditd.conf.5*
