@@ -14,7 +14,7 @@ Summary:	User space tools for 2.6 kernel auditing
 Summary(pl.UTF-8):	Narzędzia przestrzeni użytkownika do audytu jąder 2.6
 Name:		audit
 Version:	4.2.1
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Daemons
 # TODO: use
@@ -50,7 +50,7 @@ BuildRequires:	sed >= 4.0
 %endif
 Requires(post,preun):	/sbin/chkconfig
 Requires(post,preun,postun):	systemd-units >= 38
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
 Requires:	rc-scripts
 Requires:	systemd-units >= 38
 Obsoletes:	audit-audispd-plugins < 1.6.7
@@ -91,7 +91,7 @@ Summary:	Header files for audit libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek audit
 License:	LGPL v2.1+
 Group:		Development/Libraries
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
 Requires:	linux-libc-headers >= 7:2.6.30
 Requires:	libcap-ng-devel
 
@@ -108,7 +108,7 @@ Summary:	Static audit libraries
 Summary(pl.UTF-8):	Statyczne biblioteki audit
 License:	LGPL v2.1+
 Group:		Development/Libraries
-Requires:	%{name}-libs-devel = %{version}-%{release}
+Requires:	%{name}-libs-devel%{?_isa} = %{version}-%{release}
 
 %description libs-static
 The audit-libs-static package contains the static libraries for
@@ -123,7 +123,7 @@ Summary:	Go language interface to libaudit library
 Summary(pl.UTF-8):	Interfejs języka Go do biblioteki libaudit
 License:	LGPL v2.1+
 Group:		Development/Languages
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
 %if %{with gccgo}
 Requires:	gcc-go >= 5.1
 %else
@@ -141,7 +141,7 @@ Summary:	Python interface to libaudit library
 Summary(pl.UTF-8):	Interfejs Pythona do biblioteki libaudit
 License:	LGPL v2.1+
 Group:		Libraries/Python
-Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-libs%{?_isa} = %{version}-%{release}
 Obsoletes:	python-audit < 4
 
 %description -n python3-audit
